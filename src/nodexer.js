@@ -227,9 +227,9 @@ module.exports = (working_directory) =>
 			}
 
 			/* Load themes. */
-			if(f.obj.has(options, 'style.themes'))
+			if(f.obj.has(options, 'style.themes.path'))
 			{
-				var pool = [], location = options.style.themes;
+				var pool = [], location = options.style.themes.path;
 
 				try
 				{
@@ -248,7 +248,8 @@ module.exports = (working_directory) =>
 					f.config.insert('style.themes', {
 						'path' : '/themes/',
 						'pool' : pool,
-						'set' : null
+						'set' : f.obj.has(options, 'style.themes.default') ? /* Get default theme if set, also check if it exists in pool. */
+							(pool.includes(options.style.themes.default) ? options.style.themes.default : null) : null
 					});
 
 					app.use('*/themes/', express.static(location, {
@@ -265,7 +266,7 @@ module.exports = (working_directory) =>
 				handle(module.directory, req, res, process.hrtime());
 			});
 
-			/* Set http or https (if options.ssl isset) server. */
+			/* Set http or https (if options.ssl is set) server. */
 			module.server = (f.obj.has(options, 'ssl') ? 
 				require('https').createServer(options.ssl, app) : 
 				app
