@@ -23,7 +23,7 @@ const handle = async (directory, req, res, executed = null) =>
 		var relative = decodeURIComponent(req.path),
 		requested = await fsp.realpath(path.join(directory, relative)),
 		stat = await fsp.lstat(requested),
-		validated = f.isAbovePath(f.trim.right(directory, '/'), path.resolve(requested.replace(/\\/g, '/')));
+		validated = f.isAbovePath(f.trim.right(directory, '/'), requested.replace(/\\/g, '/'));
 
 		if(!validated)
 		{

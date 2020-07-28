@@ -35,7 +35,7 @@ module.exports.dir = {
 	scan : async (_path, options = {}) =>
 	{
 		/* Read directory. */
-		var files = await fsp.readdir(_path), data = [];
+		var files = await fsp.readdir(_path);
 
 		/* Hide hidden files and (some) windows specific directories ($). */
 		files = files.filter((file) => !['.', '$'].includes(file[0]));
