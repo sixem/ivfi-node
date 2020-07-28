@@ -7,9 +7,9 @@ A file directory indexer / lister script written in Node.
 
 This is a highly customizable indexer with good support for mainly image and video files while also having most of the basic features of any other directory lister. It has a gallery mode, hoverable previews and persistent user-set settings like sorting and other small adjustments. It is also designed to have a slightly retro and simple feel to it which is why it does not use any flashy CSS or icon packs.
 
-This is a node version of the [eyy-indexer](https://github.com/sixem/eyy-indexer) which is written in PHP.
+You can view a demo of the script [here](https://index.five.sh/).
 
-Note that this is a very early version of this project, so it may have a few bugs.
+Please note that this is a very early version of this project, so it may contain a few bugs.
 
 # Install
 ### Node Package Manager (NPM)
@@ -79,6 +79,8 @@ To use the compiled source, edit `.env` and change the environment from `develop
 ```
 NODE_ENV=production
 ```
+## Other Projects
+This is a node version of the [eyy-indexer](https://github.com/sixem/eyy-indexer) which is written in PHP, so check that project out if you want something for PHP.
 ## Disclaimer
 As always, use this script at your own risk. There may exist bugs that i do not know of.
 

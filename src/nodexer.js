@@ -119,6 +119,8 @@ const handle = async (directory, req, res, executed = null) =>
 			{
 				res.sendFile(requested);
 			}
+		} else {
+			res.status(400).render('errors/400');
 		}
 	} catch(e)
 	{
