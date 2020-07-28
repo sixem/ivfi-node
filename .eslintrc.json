@@ -1,0 +1,20 @@
+{
+    "env": {
+        "browser": true,
+        "node": true,
+        "commonjs": true,
+        "es2020": true,
+        "jquery": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "ecmaVersion": 11
+    },
+    "globals": {
+        "Cookies": true,
+        "Modernizr": true,
+        "config": true
+    },
+    "rules": {
+    }
+}

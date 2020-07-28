@@ -1,0 +1,89 @@
+doctype html
+head
+  meta(charset='utf-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1')
+  title Index of #{req}
+  link(rel='shortcut icon' href='/favicon.png' type='image/png')
+  link(rel='stylesheet' type='text/css' href='/js/css/style.css')
+  if config.style.themes.set
+    link(rel='stylesheet' type='text/css' href=config.style.themes.path + config.style.themes.set)
+body.directory(class=config.style.compact == true ? 'compact' : '')
+  .top-bar
+    .extend.ns &dtrif;
+    .directory-info
+      div(data-count='size')=stats.total.size
+      div(
+        data-raw=stats.newest.file > 0 ? stats.newest.file : false
+        data-count='files') #{count.files} file#{count.files == 1 ? '' : 's'}
+      div(
+        data-raw=stats.newest.directory > 0 ? stats.newest.directory : false
+        data-count='directories') #{count.directories} director#{count.directories == 1 ? 'y' : 'ies'}
+  .path
+    | Index of !{path}
+  table
+    thead
+      tr
+        th
+          span(sortable='true' title='Sort by filename') Filename
+          span.sort-indicator
+        th
+          span(sortable='true' title='Sort by modification date') Modified
+          span.sort-indicator
+        th
+          span(sortable='true' title='Sort by filesize') Size
+          span.sort-indicator
+        th
+          span(sortable='true' title='Sort by filetype') Options
+          span.sort-indicator
+    tr.parent
+      td
+        a(href=parent) [Parent Directory]
+      td -
+      td -
+      td -
+    each dir in contents.directories
+      tr.directory
+        td
+          a(href=dir.relative) [#{dir.name}]
+        td(data-raw=dir.modified.raw)
+          span
+            span(data-view='desktop')=dir.modified.formatted[0]
+            span(data-view='mobile')=dir.modified.formatted[1]
+        td -
+        td -
+    each file in contents.files
+      tr.file
+        td(data-raw=file.name)
+          if file.media == true
+            a.preview(href=file.relative)=file.name
+          else
+            a(href=file.relative)=file.name
+        td(data-raw=file.modified.raw)
+          span
+            span(data-view='desktop')=file.modified.formatted[0]
+            span(data-view='mobile')=file.modified.formatted[1]
+        td(data-raw=file.size.raw)=file.size.readable
+        td.download(data-raw=file.type)
+          a(href=file.relative download='' filename=file.name)
+            span(data-view='mobile') [Save]
+            span(data-view='desktop') [Download]
+  .bottom
+    div Page generated in #{rendered} seconds
+    div
+      | Browsing 
+      span #{req}
+  .filter-container
+    div
+      input(type='text' placeholder='Search ..' value='')
+      .status(data-view='desktop')
+    .close
+      span [Close]
+  script(type='text/javascript' src='/js/vendors.js')
+  script(type='text/javascript' src='/js/gallery.js')
+  script(type='text/javascript' src='/js/preview.js')
+
+  script(type='text/javascript').
+    var config = !{JSON.stringify(config)};
+    config.mobile = Modernizr.mq('(max-width: 640px)');
+
+  script(type='text/javascript' src='/js/main.js')

@@ -1,0 +1,9 @@
+node_modules/
+src/
+public/
+build.js
+run.js
+.env
+.babelrc
+.eslintrc.json
+.nodemon.json
