@@ -173,7 +173,7 @@ module.exports = (working_directory) =>
 		{
 			/* Store/set port and directory. */
 			module.port = port;
-			module.directory = directory.replace(/\\/g, '/');
+			module.directory = await path.resolve(directory).replace(/\\/g, '/');
 
 			/* Merge set config with defaults. */
 			f.config.set(options)
