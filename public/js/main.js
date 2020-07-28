@@ -1,11 +1,11 @@
 /**
  * @license
  * 
- * <eyy-indexer-main> [https://github.com/sixem/eyy-indexer]
+ * <nodexer:main> [https://github.com/sixem/nodexer]
  * 
- * Licensed under GPL-3.0
+ * Licensed under MIT
  * @author   emy [admin@eyy.co]
- * @version  1.1.6
+ * @version  1.1.61
  */
 
 (() =>

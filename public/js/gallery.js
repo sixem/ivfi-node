@@ -3,11 +3,11 @@
  * 
  * <gallery-mode-plugin>
  * 
- * A plugin for <eyy-indexer> [https://github.com/sixem/eyy-indexer]
+ * <nodexer:gallery> [https://github.com/sixem/nodexer]
  * 
- * Licensed under GPL-3.0
+ * Licensed under MIT
  * @author   emy [admin@eyy.co]
- * @version  0.22 (1.1.6)
+ * @version  0.22 (1.1.61)
  */
 
 (function($)
