@@ -4,7 +4,7 @@
 
 # nodexer
 
-<img alt="npm" src="https://img.shields.io/npm/v/nodexer?style=flat-square"> <img alt="David" src="https://img.shields.io/david/sixem/nodexer?style=flat-square">
+<img alt="npm" src="https://img.shields.io/npm/v/nodexer?style=flat-square"> <img alt="David" src="https://img.shields.io/david/sixem/nodexer?style=flat-square"> <img alt="Travis (.com)" src="https://img.shields.io/travis/com/sixem/nodexer?style=flat-square">
 
 A directory indexer written in Node.
 
