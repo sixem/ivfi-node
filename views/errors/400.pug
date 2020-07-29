@@ -7,7 +7,7 @@ head
   link(rel='stylesheet' type='text/css' href='/js/css/style.css')
 body.directory
   div(style='margin-left: 42px;')
-    h1 Error 400: Bad Request
+    h1 Error 400: Bad Request #{code ? ('(Code: ' + code + ')') : ''}
     div(style='display:inline-block;padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid #2b2b2b;') Sorry, something went wrong (or you just requested a bad URL) ..
     br
     a(style='color:#fff;', href='/') Click here to return.

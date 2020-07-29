@@ -16,7 +16,7 @@ var development = (process.env.NODE_ENV === 'development' ? true : false), confi
 };
 
 /* Handles any incoming requests. */
-const handle = async (directory, req, res, executed = null) =>
+const handle = async (directory, req, res, next, executed = null) =>
 {
 	try
 	{
@@ -28,6 +28,11 @@ const handle = async (directory, req, res, executed = null) =>
 		if(!validated)
 		{
 			throw new Error(`Directory request could not be validated.`);
+		}
+
+		if(development)
+		{
+			console.log('Request', requested);
 		}
 
 		if(validated && stat.isDirectory())
@@ -103,7 +108,7 @@ const handle = async (directory, req, res, executed = null) =>
 			});
 		} else if(validated && stat.isFile())
 		{
-			/* Request is a file, display it. */
+			/* A file is requested, see if it is excluded. */
 			var exclude = f.config.get('exclude'), sent = false;
 
 			if(Array.isArray(exclude))
@@ -111,13 +116,24 @@ const handle = async (directory, req, res, executed = null) =>
 				if(exclude.includes(requested.split('.').pop().toLowerCase()))
 				{
 					res.status(404).render('errors/404');
+
 					sent = true;
 				}
 			}
 
 			if(!sent)
 			{
-				res.sendFile(requested);
+				/* Request is a valid file, attempt to display it. */
+				res.sendFile(requested, (e) =>
+				{
+					if(e)
+					{
+						/* error */
+						res.status(500).end();
+
+						next();
+					}
+				});
 			}
 		} else {
 			res.status(400).render('errors/400');
@@ -128,12 +144,15 @@ const handle = async (directory, req, res, executed = null) =>
 		{
 			/* Path does not exist on the server side. */
 			res.status(404).render('errors/404');
+
 		} else {
 			/* Any non-ENOENT (404) error. */
-			console.error(e);
-
-			res.status(400).render('errors/400');
+			res.status(400).render('errors/400', {
+				code : e.code
+			});
 		}
+
+		next();
 	}
 };
 
@@ -261,9 +280,9 @@ module.exports = (working_directory) =>
 			}
 
 			/* Handle any incoming requests. */
-			app.get('(/*)?', (req, res) =>
+			app.get('(/*)?', (req, res, next) =>
 			{
-				handle(module.directory, req, res, process.hrtime());
+				handle(module.directory, req, res, next, process.hrtime());
 			});
 
 			/* Set http or https (if options.ssl is set) server. */

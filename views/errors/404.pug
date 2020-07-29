@@ -7,7 +7,7 @@ head
   link(rel='stylesheet' type='text/css' href='/js/css/style.css')
 body.directory
   div(style='margin-left: 42px;')
-    h1 Error 404: Page Not Found
+    h1 Error 404: Page Not Found #{code ? ('(Code: ' + code + ')') : ''}
     div(style='display:inline-block;padding-bottom:18px;margin-bottom:18px;border-bottom:1px solid #2b2b2b;') Sorry, but the requested URL was not found on this server.
     br
     a(style='color:#fff;', href='/') Click here to return.

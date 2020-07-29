@@ -7,7 +7,6 @@
  * 
  * Licensed under MIT
  * @author   emy [admin@eyy.co]
- * @version  0.22 (1.1.61)
  */
 
 (function($)
@@ -180,7 +179,7 @@
 			{
 				if(bool === true && video.is(':visible'))
 				{
-					var current_time = 0;
+					var current_time = video[0].currentTime;
 
 					if(main.store.continue.video && video.find('source').attr('src') == main.store.continue.video.src)
 					{
@@ -382,30 +381,72 @@
 		{
 			var adjusted = (current + change);
 
-			if(adjusted > max) adjusted = (adjusted - max) - 1;
-			if(adjusted < 0) adjusted = max - (Math.abs(adjusted) - 1);
-			if(adjusted < 0 || adjusted > max) return main.calculateIndex(current, (max - adjusted), max);
+			if(adjusted > max)
+			{
+				adjusted = (adjusted - max) - 1;
+			}
+
+			if(adjusted < 0)
+			{
+				adjusted = max - (Math.abs(adjusted) - 1);
+			}
+
+			if(adjusted < 0 || adjusted > max)
+			{
+				return main.calculateIndex(current, (max - adjusted), max);
+			}
 
 			return adjusted;
 		};
 
-		main.createVideo = (extension) =>
-		{
-			var attributes = {
-				controls : '',
-				loop : ''
-			};
+		main.video = {
+			volume : null,
+			create : (extension) =>
+			{
+				var attributes = {
+					controls : '',
+					preload : 'none',
+					loop : ''
+				};
 
-			if(main.store.autoplay) attributes.autoplay = '';
+				var video = $('<video/>', attributes),
+				source = $('<source>', {
+					type : 'video/' + extension,
+					src : ''
+				}).appendTo(video);
 
-			var video = $('<video/>', attributes);
+				return [video, source];
+			},
+			seek : (i) =>
+			{
+				var video = main.container.find('.media .wrapper video').get(0);
 
-			var source = $('<source>', {
-				type : 'video/' + extension, src : ''
-			}).appendTo(video);
+				if(video)
+				{
+					var current = Math.round(video.currentTime), duration = Math.round(video.duration);
 
-			return [video, source];
-		};
+					if(i > 0)
+					{
+						if((current + i) > duration)
+						{
+							return true;
+						} else {
+							video.currentTime = current + i;
+						}
+					} else if(i < 0)
+					{
+						if((current + i) < 0)
+						{
+							return true;
+						} else {
+							video.currentTime = current + i;
+						}
+					}
+
+					return false;
+				}
+			}
+		}
 
 		main.showItem = (type, element, src, init, index, data = null) =>
 		{
@@ -416,6 +457,8 @@
 			var applyChange = () =>
 			{
 				var opp = wrapper.find(type === 0 ? 'video' : 'img').hide();
+
+				main.data.selected.type = type;
 
 				if(type === 1)
 				{
@@ -440,8 +483,6 @@
 				if(type === 0)
 				{
 					video = wrapper.find('video');
-
-					if(main.store.console) console.log('itemDimensions', data.img.height, 'x', data.img.width);
 
 					if(main.store.fit_content)
 					{
@@ -471,25 +512,46 @@
 				{
 					if(init === false)
 					{
-						[video, source] = main.createVideo(main.data.selected.ext);
+						[video, source] = main.video.create(main.data.selected.ext);
 						video.appendTo(wrapper);
 					} else {
 						source = element.find('source');
 						video = element;
 					}
 
-					var can_play_triggered = false;
+					var evented = false;
+
+					(() =>
+					{
+						/* Attempts to fix an issue where video requests are continuing to hang after changing video source.
+						 * Probably has something to do with caching. Affects mostly larger videos that require multiple requests.
+						 * @Firefox: After 6 hanging requests, the next one is completely blocked until the others timeout.
+						 */
+
+						if(window.stop !== undefined)
+						{
+							window.stop();
+						} else if(document.execCommand !== undefined)
+						{
+							document.execCommand('Stop', false);
+						}
+					})();
 
 					source.attr('src', src);
 
+					video.off('volumechange').on('volumechange', () =>
+					{
+						main.video.volume = video.get(0).volume;
+					});
+
 					video.off('canplay canplaythrough').on('canplay canplaythrough', () =>
 					{
-						if(can_play_triggered) return false;
+						if(evented)
+						{
+							return false;
+						}
 
-						var height = video[0].videoHeight,
-							width = video[0].videoWidth;
-
-						if(main.store.console) console.log('itemDimensions', height, 'x', width);
+						var height = video[0].videoHeight, width = video[0].videoWidth;
 
 						if(main.store.fit_content)
 						{
@@ -499,6 +561,16 @@
 								width : 'auto',
 								height : `calc(calc(100vw - var(--width-list)) / ${(width / height).toFixed(4)})`
 							});
+						}
+
+						if(main.video.volume)
+						{
+							video.get(0).volume = main.video.volume;
+						}
+
+						if(main.store.autoplay)
+						{
+							video[0].play();
 						}
 
 						video.show();
@@ -515,7 +587,7 @@
 							element.remove();
 						}
 
-						can_play_triggered = true;
+						evented = true;
 
 						applyChange();
 					});
@@ -613,7 +685,7 @@
 
 				if(init)
 				{
-					video = main.createVideo(main.data.selected.ext)[0];
+					video = main.video.create(main.data.selected.ext)[0];
 					video.appendTo(main.container.find('.media .wrapper'));
 				}
 
@@ -627,17 +699,30 @@
 
 		main.handleKey = (key, callback) =>
 		{
-			if(main.store.console) console.log('handleKey', key);
+			if(main.store.console)
+			{
+				console.log('handleKey', key);
+			}
 
 			if(key === 27)
 			{
 				main.show(false);
 			} else if(key === 40 || key === 34 || key === 39)
 			{
-				main.navigate(null, 1);
+				if(key === 39 && main.data.selected.type === 1)
+				{
+					if(main.video.seek(5)) main.navigate(null, 1);
+				} else {
+					main.navigate(null, 1);
+				}
 			} else if(key === 38 || key === 33 || key === 37)
 			{
-				main.navigate(null, -1);
+				if(key === 37 && main.data.selected.type === 1)
+				{
+					if(main.video.seek(-5)) main.navigate(null, -1);
+				} else {
+					main.navigate(null, -1);
+				}
 			} else if(key === 76)
 			{
 				main.toggleList();

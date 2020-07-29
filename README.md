@@ -9,6 +9,7 @@
 A directory indexer written in Node.
 
 This is a highly customizable indexer with good support for mainly image and video files while also having most of the basic features of any other directory lister. It has a gallery mode, hoverable previews and persistent user-set settings like sorting and other small adjustments. It is also designed to have a slightly retro and simple feel to it which is why it does not use any flashy CSS or icon packs.
+<br><br>
 
 You can view a demo of the script [here](https://index.five.sh/).
 

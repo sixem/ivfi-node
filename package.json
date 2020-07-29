@@ -8,8 +8,8 @@
     "lint": "eslint ./src ./public/js",
     "compile": "npm run transpile && npm run build",
     "build": "node ./build.js",
-    "transpile": "babel -d ./lib/ ./src/",
-    "test": "npm run lint && npm run compile"
+    "transpile": "babel -d ./lib ./src",
+    "test": "npm run lint && npm run compile && node ./index.js"
   },
   "keywords": [
     "indexer",

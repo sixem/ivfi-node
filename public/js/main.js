@@ -5,7 +5,6 @@
  * 
  * Licensed under MIT
  * @author   emy [admin@eyy.co]
- * @version  1.1.61
  */
 
 (() =>
@@ -155,11 +154,20 @@
 					{
 						main.client.set(client);
 					}
-				} catch (e) {
+				} catch (e) /* On JSON.parse() error. Means that the client does not have a valid cookie, so we're creating it. */
+				{
 					client = {};
 
+					/* Set default theme (if any). */
+					if(config.style.themes.set)
+					{
+						defaults.style.theme = config.style.themes.set;
+					}
+
+					/* Create keys. */
 					(keys_required).forEach((key) => client[key] = {});
 
+					/* Merge and set cookie. */
 					main.client.set(Object.assign(client, defaults));
 				}
 
@@ -377,7 +385,7 @@
 
 							switch(option)
 							{
-								case ('theme'): // maybe make obsolete
+								case ('theme'):
 									if(data[key][option] <= (config.style.themes.pool.length - 1))
 										value = config.style.themes.pool[data[key][option]] === 'default' ? false : config.style.themes.pool[data[key][option]]; break;
 								default:

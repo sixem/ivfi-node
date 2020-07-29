@@ -37,8 +37,15 @@ module.exports.dir = {
 		/* Read directory. */
 		var files = await fsp.readdir(_path);
 
-		/* Hide hidden files and (some) windows specific directories ($). */
-		files = files.filter((file) => !['.', '$'].includes(file[0]));
+		/* Hide hidden files, invalid filenames (#) and (some) windows specific directories ($). */
+		files = files.filter((file) => {
+			if(['.', '$'].includes(file[0]) || file.includes('#'))
+			{
+				return false;
+			} else {
+				return true;
+			}
+		});
 
 		/* Map to include extensions etc. */
 		files = files.map((file) =>
