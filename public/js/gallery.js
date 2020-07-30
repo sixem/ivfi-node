@@ -678,9 +678,9 @@
 				return false;
 			}
 
-			var video, image, init, list, item;
+			var video, image, init, item;
 
-			var image = main.container.find('.media .wrapper img'),
+			image = main.container.find('.media .wrapper img');
 			video = main.container.find('.media .wrapper video');
 
 			var list = main.container.find('.list'),
