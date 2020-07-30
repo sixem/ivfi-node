@@ -168,7 +168,7 @@
 
 			if(main.store.blur)
 			{
-				main.setBlur(bool);
+				main.set.blur(bool);
 				main.limitBody(bool);
 			}
 
@@ -262,21 +262,6 @@
 			return e.length > 0 ? e : null;
 		};
 
-		main.setBlur = (bool = true) =>
-		{
-			if(bool === true)
-			{
-				main.data.blurred = $('body > *:not(.gallery-container):not(script):not(noscript):not(style)').addClass('blur ns');
-			} else {
-				if(Object.prototype.hasOwnProperty.call(main.data, 'blurred'))
-				{
-					main.data.blurred.removeClass('blur ns');
-				}
-			}
-
-			return main;
-		};
-
 		main.update = {
 			listWidth : (wrapper = null) =>
 			{
@@ -336,25 +321,68 @@
 			}
 		};
 
-		/* sets the item info for the current item (topbar left) */
-		main.setItemInfo = (item, index, max) =>
-		{
-			if(main.store.console) console.log('itemSet', item);
+		main.set = {
+			cache : {
+				info : null
+			},
+			/* Sets the item info for the current item.
+			 * If update is set to false, then info is cache temporary and not shown.
+			 * Set update to true in order to show cached info.
+			 */
+			itemInfo : (update, item = null, index = null, max = null) =>
+			{
+				if(main.store.console && !update)
+				{
+					console.log('itemSet', item);
+				}
 
-			var name = main.store.mobile ? main.shortenString(item.name, 30) : item.name;
+				if(update)
+				{
+					if(Array.isArray(main.set.cache.info))
+					{
+						[item, index, max] = main.set.cache.info;
+					} else if(item === null || index === null || max === null)
+					{
+						return false;
+					}
+				} else {
+					main.set.cache.info = [item, index, max];
 
-			main.container
-			.find('.bar > .right > a.download')
-			.attr('filename', item.name)
-			.attr('href', item.url)
-			.attr('title', `Download: ${item.name}`);
+					return false;
+				}
 
-			main.container.find('.bar > .left').html(
-				`<span>${index + 1} of ${max}</span>`+
-				` | <a href="${item.url}">${name}</a>`+
-				(Object.prototype.hasOwnProperty.call(item, 'size') && !main.store.mobile ? ` | <span>${item.size}</span>` : '')
-			);
-		};
+				var name = main.store.mobile ? main.shortenString(item.name, 30) : item.name;
+
+				main.container
+				.find('.bar > .right > a.download')
+				.attr('filename', item.name)
+				.attr('href', item.url)
+				.attr('title', `Download: ${item.name}`);
+
+				main.container.find('.bar > .left').html(
+					`<span>${index + 1} of ${max}</span>` +
+					` | <a href="${item.url}">${name}</a>` +
+					(Object.prototype.hasOwnProperty.call(item, 'size') && !main.store.mobile ? ` | <span>${item.size}</span>` : '')
+				);
+
+				return true;
+			},
+			/* Enables blur for (almost) all child elements of body. */
+			blur : (bool = true) =>
+			{
+				if(bool === true)
+				{
+					main.data.blurred = $('body > *:not(.gallery-container):not(script):not(noscript):not(style)').addClass('blur ns');
+				} else {
+					if(Object.prototype.hasOwnProperty.call(main.data, 'blurred'))
+					{
+						main.data.blurred.removeClass('blur ns');
+					}
+				}
+
+				return main;
+			}
+		}
 
 		/* checks if an item is visible in the viewport (can be improved upon) */
 		main.isScrolledIntoView = (elem, offset) =>
@@ -456,6 +484,8 @@
 
 			var applyChange = () =>
 			{
+				main.set.itemInfo(true);
+
 				var opp = wrapper.find(type === 0 ? 'video' : 'img').hide();
 
 				main.data.selected.type = type;
@@ -503,6 +533,8 @@
 
 					if(video.length > 0)
 					{
+						video.off('error');
+
 						video[0].pause();
 						video.find('source').attr('src', '');
 					}
@@ -525,6 +557,7 @@
 					{
 						/* Attempts to fix an issue where video requests are continuing to hang after changing video source.
 						 * Probably has something to do with caching. Affects mostly larger videos that require multiple requests.
+						 * This will stop any active requests before setting a new video source. Not optimal but one of very few "solutions".
 						 * @Firefox: After 6 hanging requests, the next one is completely blocked until the others timeout.
 						 */
 
@@ -539,12 +572,21 @@
 
 					source.attr('src', src);
 
-					video.off('volumechange').on('volumechange', () =>
+					var error = (err) =>
+					{
+						console.error('Failed to load video source.', err);
+						main.busy(false);
+					}
+
+					video.on('error', (err) => error(err));
+					source.on('error', (err) => error(err));
+
+					video.on('volumechange', () =>
 					{
 						main.video.volume = video.get(0).volume;
 					});
 
-					video.off('canplay canplaythrough').on('canplay canplaythrough', () =>
+					video.on('canplay canplaythrough', () =>
 					{
 						if(evented)
 						{
@@ -609,36 +651,60 @@
 
 		main.navigate = (index, step = null) =>
 		{
-			if(main.store.console) console.log('busyState', main.busy());
+			if(main.store.console)
+			{
+				console.log('busyState', main.busy());
+			}
 
-			if(main.busy()) return false;
+			if(main.busy())
+			{
+				return false;
+			}
 
 			var max = main.items.length - 1;
 
-			if(index === null) index = main.data.selected.index;
-			if(step !== null) index = main.calculateIndex(index, step, max);
-			if(main.data.selected.index === index || main.busy() === true) return;
+			if(index === null)
+			{
+				index = main.data.selected.index;
+			}
 
-			var item = main.items[index]; main.setItemInfo(item, index, max + 1);
+			if(step !== null)
+			{
+				index = main.calculateIndex(index, step, max);
+			}
+
+			if(main.data.selected.index === index || main.busy() === true)
+			{
+				return false;
+			}
+
+			var video, image, init, list, item;
+
+			var image = main.container.find('.media .wrapper img'),
+			video = main.container.find('.media .wrapper video');
+
+			var list = main.container.find('.list'),
+			table = list.find('table'),
+			element = table.find('tr').eq(index);
+
+			item = main.items[index];
 
 			main.data.selected.src = item.url;
 			main.data.selected.ext = main.getExtension(item.name);
 
-			var list = main.container.find('.list'), table = list.find('table'), elem = table.find('tr').eq(index);
-
 			table.find('tr.selected').removeAttr('class');
-			elem.attr('class', 'selected');
+			element.attr('class', 'selected');
 
-			if(!main.isScrolledIntoView(elem, Math.floor(main.container.find('.bar').outerHeight() - 4))) list.scrollTo(elem);
+			main.set.itemInfo((image.length === 0 && video.length === 0) ? true : false, item, index, max + 1);
 
-			var video, image, init;
+			if(!main.isScrolledIntoView(element, Math.floor(main.container.find('.bar').outerHeight() - 4)))
+			{
+				list.scrollTo(element);
+			}
 
 			if(main.isImage(null, main.data.selected.ext))
 			{
 				main.busy(true);
-
-				image = main.container.find('.media .wrapper img');
-				video = main.container.find('.media .wrapper video');
 
 				init = (image.length === 0);
 
@@ -680,7 +746,6 @@
 			{
 				main.busy(true);
 
-				video = main.container.find('.media .wrapper video');
 				init = (video.length === 0);
 
 				if(init)
@@ -1132,7 +1197,7 @@
 		{
 			initiate(() =>
 			{
-				if(main.store.blur) main.setBlur(true).bind();
+				if(main.store.blur) main.set.blur(true).bind();
 			});
 		} else {
 			main.show(true);

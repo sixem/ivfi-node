@@ -30,11 +30,6 @@ const handle = async (directory, req, res, next, executed = null) =>
 			throw new Error(`Directory request could not be validated.`);
 		}
 
-		if(development)
-		{
-			console.log('Request', requested);
-		}
-
 		if(validated && stat.isDirectory())
 		{
 			/* Request is a directory, collect data and render. */

@@ -17,7 +17,6 @@
 			defaults : {},
 			selection : {},
 			selected : null,
-			gallery : null,
 			refresh : false,
 		},
 		debounce : (f) =>
@@ -283,7 +282,7 @@
 				gallery : {
 					list_alignment : (alignment) =>
 					{
-						if(main.store.gallery)
+						if(main.gallery.instance)
 						{
 							var elements = [
 								'.gallery-container div.content-container .media .loader',
@@ -294,14 +293,14 @@
 							elements.forEach((e) => alignment === 0 ? $(e).removeClass('reversed') : $(e).addClass('reversed'));
 							var detached = $(elements[1]).detach(), media = ('.gallery-container div.content-container .media');
 							alignment === 1 ? detached.insertBefore(media) : detached.insertAfter(media);
-							(main.store.gallery).store.list.reverse = (alignment === 0 ? false : true);
+							(main.gallery.instance).store.list.reverse = (alignment === 0 ? false : true);
 						}
 					},
 					reverse_options : (value) =>
 					{
-						if(main.store.gallery)
+						if(main.gallery.instance)
 						{
-							main.store.gallery.store.reverse_options = value;
+							main.gallery.instance.store.reverse_options = value;
 							var e = $('.gallery-container div.content-container .media .wrapper .cover .reverse');
 							console.log(e);
 							if(e.length > 0) e.remove();
@@ -309,13 +308,13 @@
 					},
 					autoplay : (value) =>
 					{
-						if(main.store.gallery) main.store.gallery.store.autoplay = value;
+						if(main.gallery.instance) main.gallery.instance.store.autoplay = value;
 					},
 					fit_content : (value) =>
 					{
-						if(main.store.gallery)
+						if(main.gallery.instance)
 						{
-							main.store.gallery.store.fit_content = value;
+							main.gallery.instance.store.fit_content = value;
 							var wrapper = $('.gallery-container div.content-container .media .wrapper');
 
 							if(wrapper && value)
@@ -667,7 +666,7 @@
 					size : 0
 				}, match = null;
 
-				if(main.store.gallery) main.store.gallery.data.selected.index = 0;
+				if(main.gallery.instance) main.gallery.instance.data.selected.index = 0;
 
 				$('body > table tr.file, body > table tr.directory').each((index, item) =>
 				{
@@ -1073,6 +1072,7 @@
 			}
 		},
 		gallery : {
+			instance : null,
 			load : (index = 0) =>
 			{
 				if(!config.gallery.enabled)
@@ -1083,9 +1083,9 @@
 				if(config.debug) console.log('gallery.load =>', index);
 
 				/* if a gallery instance is already active, show it */
-				if(main.store.gallery && main.store.gallery !== false)
+				if(main.gallery.instance && main.gallery.instance !== false)
 				{
-					(main.store.gallery).store.continue.video = main.store.preview.video ? {
+					(main.gallery.instance).store.continue.video = main.store.preview.video ? {
 						'src' : main.store.preview.video.find('source').attr('src'),
 						'time' : main.store.preview.video[0].currentTime
 					} : null;
@@ -1098,7 +1098,7 @@
 					{
 						return false;
 					} else {
-						main.store.gallery.show(true, index === null ? main.store.gallery.data.selected.index : index, items);
+						main.gallery.instance.show(true, index === null ? main.gallery.instance.data.selected.index : index, items);
 
 						if(main.store.refresh)
 						{
@@ -1150,11 +1150,11 @@
 					} : null
 				}
 
-				main.store.gallery = new $.fn.gallery(main.getTableItems(), options);
+				main.gallery.instance = new $.fn.gallery(main.getTableItems(), options);
 
-				if(main.store.gallery !== false)
+				if(main.gallery.instance !== false)
 				{
-					$(main.store.gallery).on('unbound', () => main.bind());
+					$(main.gallery.instance).on('unbound', () => main.bind());
 				}
 			}
 		},
@@ -1407,10 +1407,10 @@
 
 		config.mobile = Modernizr.mq('(max-width: 640px)');
 
-		if(main.store.gallery)
+		if(main.gallery.instance)
 		{
-			(main.store.gallery).store.mobile = config.mobile;
-			(main.store.gallery).update.listWidth();
+			(main.gallery.instance).store.mobile = config.mobile;
+			(main.gallery.instance).update.listWidth();
 		}
 	}));
 
