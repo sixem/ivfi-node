@@ -41,7 +41,6 @@ var server = nodexer.run(3000, 'E:/Downloads', {
 		}
 	},
 	style : {
-		themes : 'E:/.themes',
 		compact : true
 	}
 });
