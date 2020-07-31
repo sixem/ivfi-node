@@ -3,6 +3,7 @@
 const f = require('./functions.js');
 
 var config = {
+	processor : null,
 	format : {
 		sizes : [' B', ' kB', ' MB', ' GB', ' TB'],
 		date : ['d/m/y H:i', 'd/m/y']

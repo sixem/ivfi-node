@@ -16,7 +16,7 @@ You can view a demo of the script [here](https://index.five.sh/).
 Please note that this is a very early version of this project, so it may contain a few bugs.
 
 # Install
-### Node Package Manager (NPM)
+### NPM
 ```
 npm install nodexer
 ```
@@ -40,12 +40,15 @@ var server = nodexer.run(3000, 'E:/Downloads', {
 			'username': 'password'
 		}
 	},
+	gallery : {
+		fit_content : true
+	},
 	style : {
 		compact : true
 	}
 });
 ```
-This will also start a webserver on `http://localhost:3000/` with the path set to `E:/Downloads`. In this example it'll also enable a simple authentication system and a set a few styling options.
+This will also start a webserver on `http://localhost:3000/` with the path set to `E:/Downloads`. In this example it'll also enable a basic authentication system and a few other options options.
 
 A documentation of the available options can be found [here](https://github.com/sixem/nodexer/wiki/Documentation#options).
 

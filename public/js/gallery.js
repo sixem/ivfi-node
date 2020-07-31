@@ -553,13 +553,17 @@
 
 					var evented = false;
 
-					(() =>
+					/*(() =>
 					{
-						/* Attempts to fix an issue where video requests are continuing to hang after changing video source.
+						 * Attempts to fix an issue where video requests are continuing to hang after changing video source.
 						 * Probably has something to do with caching. Affects mostly larger videos that require multiple requests.
+						 *
 						 * This will stop any active requests before setting a new video source. Not optimal but one of very few "solutions".
+						 *
 						 * @Firefox: After 6 hanging requests, the next one is completely blocked until the others timeout.
-						 */
+						 *
+
+						 *** (!) Disabled as it stops .gif files from loading after firing, other than that it works.
 
 						if(window.stop !== undefined)
 						{
@@ -568,7 +572,7 @@
 						{
 							document.execCommand('Stop', false);
 						}
-					})();
+					})();*/
 
 					source.attr('src', src);
 

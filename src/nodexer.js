@@ -80,15 +80,15 @@ const handle = async (directory, req, res, next, executed = null) =>
 			}
 
 			/* Trim the relative path (request uri). */
-			relative = relative !== '/' ? f.trim.right(relative, '/') : relative;
+			relative = (relative !== '/' ? f.trim.right(relative, '/').replace(/([^:]\/)\/+/g, "$1") : relative);
 
-			/* Render the page. Variables are passed to views/index.pug. */
-			res.render('index', {
+			/* Set variables for passing to template. */
+			var variables = {
 				config : user,
 				contents : data.contents,
 				path : f.clickablePath(relative),
 				req : relative,
-				parent : f.addLeading(path.dirname(relative).split(path.sep).pop(), '/'),
+				parent : f.addLeading(relative.substring(0, relative.lastIndexOf('/')), '/'),
 				count : {
 					files : data.contents.files.length,
 					directories : data.contents.directories.length
@@ -100,7 +100,18 @@ const handle = async (directory, req, res, next, executed = null) =>
 					newest : data.stats.newest
 				},
 				rendered : f.getExecutionTime(process.hrtime(executed))
-			});
+			};
+
+			/* If a processor function has been passed, run vars through that. */
+			var processor = f.config.get('processor');
+
+			if(processor)
+			{
+				variables = processor(variables);
+			}
+
+			/* Render the page. Variables are passed to views/index.pug. */
+			res.render('index', variables);
 		} else if(validated && stat.isFile())
 		{
 			/* A file is requested, see if it is excluded. */
@@ -212,6 +223,16 @@ module.exports = (working_directory) =>
 				}
 			}
 
+			/* Set authentication. */
+			if(f.obj.has(options, 'authentication.users'))
+			{
+				app.use(require('express-basic-auth')(
+				{
+					users : options.authentication.users,
+					challenge : true
+				}));
+			}
+
 			/* Set public directory. */
 			app.use(express.static(working_directory + `/${development ? 'public' : 'dist'}/`));
 
@@ -225,20 +246,10 @@ module.exports = (working_directory) =>
 			/* Loop over static directories and apply them. */
 			Object.keys(serve).forEach((key) =>
 			{
-				app.use(`*/${key}/`, express.static(`${working_directory}/${development ? 'public' : 'dist'}/${key}`, {
+				app.use(`/${key}`, express.static(`${working_directory}/${development ? 'public' : 'dist'}/${key}`, {
 					extensions : serve[key]
 				}));
 			});
-
-			/* Set authentication. */
-			if(f.obj.has(options, 'authentication.users'))
-			{
-				app.use(require('express-basic-auth')(
-				{
-					users : options.authentication.users,
-					challenge : true
-				}));
-			}
 
 			/* Load themes. */
 			if(f.obj.has(options, 'style.themes.path'))
@@ -266,7 +277,7 @@ module.exports = (working_directory) =>
 							(pool.includes(options.style.themes.default) ? options.style.themes.default : null) : null
 					});
 
-					app.use('*/themes/', express.static(location, {
+					app.use('/themes', express.static(location, {
 						extensions : ['css']
 					}));
 				} else {

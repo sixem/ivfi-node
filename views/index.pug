@@ -4,9 +4,9 @@ head
   meta(name='viewport' content='width=device-width, initial-scale=1')
   title Index of #{req}
   link(rel='shortcut icon' href='/favicon.png' type='image/png')
-  link(rel='stylesheet' type='text/css' href='/js/css/style.css')
+  link(rel='stylesheet' type='text/css' href='/css/style.css')
   if config.style.themes.set
-    link(rel='stylesheet' type='text/css' href=config.style.themes.path + config.style.themes.set)
+    link(rel='stylesheet' type='text/css' href=config.style.themes.path + config.style.themes.set + (config.style.themes.set.endsWith('.css') ? '' : '.css'))
 body.directory(class=config.style.compact == true ? 'compact' : '')
   .top-bar
     .extend.ns &dtrif;
