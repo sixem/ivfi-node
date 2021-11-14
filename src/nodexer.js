@@ -6,6 +6,9 @@ const express = require('express');
 const cookies = require('cookie-parser');
 const compression = require('compression');
 
+const showdown = require('showdown'),
+	converter = new showdown.Converter()
+
 const path = require('path');
 const fsp = require('fs').promises;
 
@@ -57,11 +60,11 @@ const handle = async (directory, req, res, next, executed = null) =>
 			});
 
 			/* Collect and read readme file */
-			var readme = await data.contents.files.find(x => x.name === 'readme.txt')
+			var readme = await data.contents.files.find(x => x.name === 'README.md')
 			var readmeContent
 			if (readme) {
 				await fsp.readFile(directory + readme.relative, 'utf8').then(fileBuffer => {
-					readmeContent = (fileBuffer.toString())
+					readmeContent = converter.makeHtml(fileBuffer.toString())
 				})
 			}
 
