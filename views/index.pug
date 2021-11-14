@@ -22,7 +22,7 @@ body.directory(class=config.style.compact == true ? 'compact' : '')
     | Index of !{path}
   if readme
     details(open) 
-      summary README.md
+      summary(class='noselect') README.md
       p !{readme}
   table
     thead
