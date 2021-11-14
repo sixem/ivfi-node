@@ -32,6 +32,10 @@ var config = {
 		cursor_indicator : true,
 		static : false
 	},
+	readme: {
+		enabled: true,
+		hidden: true
+	},
 	media : {
 		extensions : {
 			image : ['jpg', 'jpeg', 'gif', 'png', 'ico', 'svg', 'bmp', 'webp'],

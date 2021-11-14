@@ -60,15 +60,23 @@ const handle = async (directory, req, res, next, executed = null) =>
 			});
 
 			/* Collect and read `README.md` file. */
-			var readme = await data.contents.files.find(file => file.name === 'README.md');
 			var readmeContent = null;
 
-			if(readme)
+			if(config.app.readme.enabled)
 			{
-				await fsp.readFile(directory + readme.relative, 'utf8').then(fileBuffer => {
-					readmeContent = converter.makeHtml(fileBuffer.toString());
-				});
+				var readme = await data.contents.files.find(file => file.name === 'README.md');
+
+				if(readme)
+				{
+					await fsp.readFile(path.join(directory, readme.relative), 'utf8').then(fileBuffer => {
+						readmeContent = converter.makeHtml(fileBuffer.toString());
+					});
+				}
+
+				readme.hidden = config.app.readme.hidden ? true : false;
 			}
+
+			console.log(data.contents.files);
 
 			/* Collected data has some value stored in a 'raw' key that we need to access. */
 			var raw = ['size', 'modified'].includes(user.sorting.sort_by) ? true : false;

@@ -160,6 +160,7 @@ module.exports.dir = {
 			data.contents[file.directory ? 'directories' : 'files'].push({
 				media : (type === 0 || type === 1) ? true : false,
 				type : type === 0 ? 'image' : (type === 1 ? 'video' : 'other'),
+				hidden: false,
 				relative : path.join(_path.relative, (file.basename)).replace(/\\/g, '/'),
 				name : file.basename,
 				size,
