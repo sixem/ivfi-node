@@ -20,6 +20,8 @@ body.directory(class=config.style.compact == true ? 'compact' : '')
         data-count='directories') #{count.directories} director#{count.directories == 1 ? 'y' : 'ies'}
   .path
     | Index of !{path}
+  .readme
+    | !{readme}
   table
     thead
       tr

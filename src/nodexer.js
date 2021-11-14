@@ -56,6 +56,15 @@ const handle = async (directory, req, res, next, executed = null) =>
 				}
 			});
 
+			/* Collect and read readme file */
+			var readme = await data.contents.files.find(x => x.name === 'readme.txt')
+			var readmeContent
+			if (readme) {
+				await fsp.readFile(directory + readme.relative, 'utf8').then(fileBuffer => {
+					readmeContent = (fileBuffer.toString())
+				})
+			}
+
 			/* Collected data has some value stored in a 'raw' key that we need to access. */
 			var raw = ['size', 'modified'].includes(user.sorting.sort_by) ? true : false;
 
@@ -87,6 +96,7 @@ const handle = async (directory, req, res, next, executed = null) =>
 				config : user,
 				contents : data.contents,
 				path : f.clickablePath(relative),
+				readme : readmeContent,
 				req : relative,
 				parent : f.addLeading(relative.substring(0, relative.lastIndexOf('/')), '/'),
 				count : {
