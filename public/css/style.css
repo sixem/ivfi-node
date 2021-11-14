@@ -140,26 +140,14 @@ body > div.path a:hover
 	text-decoration: underline;
 }
 
-body > div.readme-container::before
-{
-	content: 'README.md';
-	margin-left: 8px;
-	border-bottom: 1px solid var(--color-border-main);
-	display: block;
-	padding-bottom: 4px;
-}
-
-body > div.readme-container
-{
-	font-size: 14px;
-	padding: 12px 0px 12px 0px;
-}
-
-body > div.readme-container > div.contents
+details
 {
 	padding: 0px 8px;
 	white-space: pre-wrap;
 	word-wrap: break-word;
+	font-size: 14px;
+	border-bottom: 1px solid var(--color-border-main);
+	padding-bottom: 4px;
 }
 
 div.top-bar > div.directory-info > div.quick-path
