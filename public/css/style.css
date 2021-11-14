@@ -150,6 +150,10 @@ details
 	padding-bottom: 4px;
 }
 
+details summary { 
+	cursor: pointer;
+}
+
 div.top-bar > div.directory-info > div.quick-path
 {
 	max-width: 50vw;
