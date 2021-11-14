@@ -71,12 +71,10 @@ const handle = async (directory, req, res, next, executed = null) =>
 					await fsp.readFile(path.join(directory, readme.relative), 'utf8').then(fileBuffer => {
 						readmeContent = converter.makeHtml(fileBuffer.toString());
 					});
+
+					readme.hidden = config.app.readme.hidden ? true : false;
 				}
-
-				readme.hidden = config.app.readme.hidden ? true : false;
 			}
-
-			console.log(data.contents.files);
 
 			/* Collected data has some value stored in a 'raw' key that we need to access. */
 			var raw = ['size', 'modified'].includes(user.sorting.sort_by) ? true : false;
