@@ -34,8 +34,6 @@
 			var client = main.client.get();
 
 			client.readme_visibility = (e.target ? e.target.hasAttribute('open') : false);
-
-			console.log('->', client.readme_visibility);
 	
 			main.client.set(client);
 		},
