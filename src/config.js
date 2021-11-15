@@ -34,7 +34,7 @@ var config = {
 	},
 	readme: {
 		enabled: true,
-		hidden: true
+		hidden: false
 	},
 	media : {
 		extensions : {
