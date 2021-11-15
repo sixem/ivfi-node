@@ -21,9 +21,9 @@ body.directory(class=config.style.compact == true ? 'compact' : '')
   .path
     | Index of !{path}
   if readme
-    details(open) 
-      summary(class='noselect') README.md
-      p !{readme}
+    details(open)
+      summary(class='noselect') README.md !{' '}
+      div(class='contents') !{readme}
   table
     thead
       tr

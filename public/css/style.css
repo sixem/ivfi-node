@@ -142,16 +142,22 @@ body > div.path a:hover
 
 details
 {
-	padding: 0px 8px;
+	padding: 0px 8px 10px 8px;
 	white-space: pre-wrap;
 	word-wrap: break-word;
 	font-size: 14px;
-	border-bottom: 1px solid var(--color-border-main);
-	padding-bottom: 4px;
 }
 
-details summary { 
+details[open] > div.contents
+{
+	border-top: 1px solid var(--color-border-main);
+	margin-top: 10px;
+}
+
+details summary
+{ 
 	cursor: pointer;
+	outline: none;
 }
 
 div.top-bar > div.directory-info > div.quick-path
