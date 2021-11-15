@@ -1233,6 +1233,15 @@
 		},
 		bind : () =>
 		{
+			document.querySelector('details').addEventListener('toggle', (e) =>
+			{
+				var client = main.client.get();
+
+				client.readme_visibility = (e.target ? e.target.hasAttribute('open') : false);
+		
+				main.client.set(client);
+			});
+
 			$(document).off('keydown').on('keydown', (e) =>
 			{
 				if(e.shiftKey && e.keyCode === 70)

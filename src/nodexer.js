@@ -107,7 +107,10 @@ const handle = async (directory, req, res, next, executed = null) =>
 				config : user,
 				contents : data.contents,
 				path : f.clickablePath(relative),
-				readme : readmeContent,
+				readme : {
+					content: readmeContent,
+					collapsed: !user.readme_visibility
+				},
 				req : relative,
 				parent : f.addLeading(relative.substring(0, relative.lastIndexOf('/')), '/'),
 				count : {

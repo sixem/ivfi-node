@@ -20,10 +20,10 @@ body.directory(class=config.style.compact == true ? 'compact' : '')
         data-count='directories') #{count.directories} director#{count.directories == 1 ? 'y' : 'ies'}
   .path
     | Index of !{path}
-  if readme
-    details(open)
+  if readme.content
+    details(open=(readme.collapsed ? false : ''))
       summary(class='noselect') README.md !{' '}
-      div(class='contents') !{readme}
+      div(class='contents') !{readme.content}
   table
     thead
       tr
