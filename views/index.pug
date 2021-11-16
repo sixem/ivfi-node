@@ -20,6 +20,10 @@ body.directory(class=config.style.compact == true ? 'compact' : '')
         data-count='directories') #{count.directories} director#{count.directories == 1 ? 'y' : 'ies'}
   .path
     | Index of !{path}
+  if readme.content
+    details(open=(readme.collapsed ? false : ''))
+      summary(class='noselect') README.md !{' '}
+      div(class='contents') !{readme.content}
   table
     thead
       tr
@@ -53,20 +57,21 @@ body.directory(class=config.style.compact == true ? 'compact' : '')
         td -
     each file in contents.files
       tr.file
-        td(data-raw=file.name)
-          if file.media == true
-            a.preview(href=file.relative)=file.name
-          else
-            a(href=file.relative)=file.name
-        td(data-raw=file.modified.raw)
-          span
-            span(data-view='desktop')=file.modified.formatted[0]
-            span(data-view='mobile')=file.modified.formatted[1]
-        td(data-raw=file.size.raw)=file.size.readable
-        td.download(data-raw=file.type)
-          a(href=file.relative download='' filename=file.name)
-            span(data-view='mobile') [Save]
-            span(data-view='desktop') [Download]
+        if !file.hidden
+          td(data-raw=file.name)
+            if file.media == true
+              a.preview(href=file.relative)=file.name
+            else
+              a(href=file.relative)=file.name
+          td(data-raw=file.modified.raw)
+            span
+              span(data-view='desktop')=file.modified.formatted[0]
+              span(data-view='mobile')=file.modified.formatted[1]
+          td(data-raw=file.size.raw)=file.size.readable
+          td.download(data-raw=file.type)
+            a(href=file.relative download='' filename=file.name)
+              span(data-view='mobile') [Save]
+              span(data-view='desktop') [Download]
   .bottom
     div Page generated in #{rendered} seconds
     div

@@ -140,6 +140,26 @@ body > div.path a:hover
 	text-decoration: underline;
 }
 
+details
+{
+	padding: 0px 8px 10px 8px;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	font-size: 14px;
+}
+
+details[open] > div.contents
+{
+	border-top: 1px solid var(--color-border-main);
+	margin-top: 10px;
+}
+
+details summary
+{ 
+	cursor: pointer;
+	outline: none;
+}
+
 div.top-bar > div.directory-info > div.quick-path
 {
 	max-width: 50vw;
@@ -1229,3 +1249,13 @@ img#image-preview, video#video-preview
 {
   box-shadow: 0px 0px 1px #0d0d0d;
 }
+
+.noselect {
+	-webkit-touch-callout: none; /* iOS Safari */
+	  -webkit-user-select: none; /* Safari */
+	   -khtml-user-select: none; /* Konqueror HTML */
+		 -moz-user-select: none; /* Old versions of Firefox */
+		  -ms-user-select: none; /* Internet Explorer/Edge */
+			  user-select: none; /* Non-prefixed version, currently
+									supported by Chrome, Edge, Opera and Firefox */
+  }

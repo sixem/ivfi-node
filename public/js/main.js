@@ -29,6 +29,14 @@
 				timer = setTimeout(f, 100, e);
 			};
 		},
+		onReadmeToggle : (e) =>
+		{
+			var client = main.client.get();
+
+			client.readme_visibility = (e.target ? e.target.hasAttribute('open') : false);
+	
+			main.client.set(client);
+		},
 		checkNested : (obj, ...args) =>
 		{
 			for(var i = 0; i < args.length; i++)
@@ -1233,6 +1241,14 @@
 		},
 		bind : () =>
 		{
+			let readmeToggleElement = document.querySelector('details');
+
+			if(readmeToggleElement)
+			{
+				readmeToggleElement.removeEventListener('toggle', main.onReadmeToggle);
+				readmeToggleElement.addEventListener('toggle', main.onReadmeToggle);
+			}
+
 			$(document).off('keydown').on('keydown', (e) =>
 			{
 				if(e.shiftKey && e.keyCode === 70)

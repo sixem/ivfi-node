@@ -160,6 +160,7 @@ module.exports.dir = {
 			data.contents[file.directory ? 'directories' : 'files'].push({
 				media : (type === 0 || type === 1) ? true : false,
 				type : type === 0 ? 'image' : (type === 1 ? 'video' : 'other'),
+				hidden: false,
 				relative : path.join(_path.relative, (file.basename)).replace(/\\/g, '/'),
 				name : file.basename,
 				size,
@@ -189,6 +190,7 @@ module.exports.createClientConfig = (client, app, overrides) =>
 			themes : (app).style.themes,
 			compact : (app).style.compact
 		},
+		readme_visibility : true,
 		debug : (app).debug
 	};
 
@@ -262,7 +264,10 @@ module.exports.mergeExisting = {
 /* Sets required values (settings etc.) to a user config. */
 module.exports.setUserConfig = (conf, client) =>
 {
-	if(_.isEmpty(client) || !client) return conf;
+	if(_.isEmpty(client) || !client)
+	{
+		return conf;
+	}
 
 	if(_.has(client, 'style.compact') && typeof client.style.compact === 'boolean')
 	{
@@ -301,6 +306,11 @@ module.exports.setUserConfig = (conf, client) =>
 			conf.sorting.order = (client.sort.ascending === 1 ? 'asc' : 'desc');
 			conf.sorting.enabled = true;
 		}
+	}
+
+	if(_.has(client, 'readme_visibility'))
+	{
+		conf.readme_visibility = client.readme_visibility;
 	}
 
 	return conf;

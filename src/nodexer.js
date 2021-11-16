@@ -6,6 +6,9 @@ const express = require('express');
 const cookies = require('cookie-parser');
 const compression = require('compression');
 
+const showdown = require('showdown');
+const converter = new showdown.Converter();
+
 const path = require('path');
 const fsp = require('fs').promises;
 
@@ -56,6 +59,23 @@ const handle = async (directory, req, res, next, executed = null) =>
 				}
 			});
 
+			/* Collect and read `README.md` file. */
+			var readmeContent = null;
+
+			if(config.app.readme.enabled)
+			{
+				var readme = await data.contents.files.find(file => file.name === 'README.md');
+
+				if(readme)
+				{
+					await fsp.readFile(path.join(directory, readme.relative), 'utf8').then(fileBuffer => {
+						readmeContent = converter.makeHtml(fileBuffer.toString());
+					});
+
+					readme.hidden = config.app.readme.hidden ? true : false;
+				}
+			}
+
 			/* Collected data has some value stored in a 'raw' key that we need to access. */
 			var raw = ['size', 'modified'].includes(user.sorting.sort_by) ? true : false;
 
@@ -87,6 +107,10 @@ const handle = async (directory, req, res, next, executed = null) =>
 				config : user,
 				contents : data.contents,
 				path : f.clickablePath(relative),
+				readme : {
+					content: readmeContent,
+					collapsed: !user.readme_visibility
+				},
 				req : relative,
 				parent : f.addLeading(relative.substring(0, relative.lastIndexOf('/')), '/'),
 				count : {
