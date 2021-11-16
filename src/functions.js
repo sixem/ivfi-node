@@ -190,6 +190,7 @@ module.exports.createClientConfig = (client, app, overrides) =>
 			themes : (app).style.themes,
 			compact : (app).style.compact
 		},
+		readme_visibility : true,
 		debug : (app).debug
 	};
 
