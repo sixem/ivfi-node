@@ -43,7 +43,7 @@ module.exports.dir = {
 			{
 				if (file === '.indexignore'){
 					return true;
-				};
+				}
 				return false;
 			} else {
 				return true;
