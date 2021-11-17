@@ -41,6 +41,9 @@ module.exports.dir = {
 		files = files.filter((file) => {
 			if(['.', '$'].includes(file[0]) || file.includes('#'))
 			{
+				if (file === '.indexignore'){
+					return true;
+				};
 				return false;
 			} else {
 				return true;

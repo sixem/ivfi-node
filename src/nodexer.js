@@ -76,6 +76,24 @@ const handle = async (directory, req, res, next, executed = null) =>
 				}
 			}
 
+			/* Check for .indexignore */
+			var ignoreContent = null;
+
+			var ignore = await data.contents.files.find(file => file.name === '.indexignore')
+
+			if (ignore) {
+				await fsp.readFile(path.join(directory, ignore.relative), 'utf8').then(fileBuffer => {
+					ignoreContent = fileBuffer.toString();
+					var arr = ignoreContent.split('\n')
+
+					arr.forEach(element => {
+						var ignoredFile = data.contents.files.find(file => file.name === element)
+						ignoredFile.hidden = true
+					})
+				})
+				ignore.hidden = true
+			}
+
 			/* Collected data has some value stored in a 'raw' key that we need to access. */
 			var raw = ['size', 'modified'].includes(user.sorting.sort_by) ? true : false;
 
