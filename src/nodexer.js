@@ -77,7 +77,6 @@ const handle = async (directory, req, res, next, executed = null) =>
 			}
 
 			/* Check for `.indexignore` file. */
-			var ignoreContent = null;
 			var ignore = await data.contents.files.find(file => file.name === '.indexignore');
 
 			/** If `.indexignore` is present. */
@@ -110,7 +109,7 @@ const handle = async (directory, req, res, next, executed = null) =>
 							break;
 						}
 
-						if(fileObject.hasOwnProperty(input))
+						if(Object.prototype.hasOwnProperty.call(fileObject, input))
 						{
 							fileObject[input].hidden = true;
 						} else if(input.includes('*'))
