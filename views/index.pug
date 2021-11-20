@@ -46,18 +46,19 @@ body.directory(class=config.style.compact == true ? 'compact' : '')
       td -
       td -
     each dir in contents.directories
-      tr.directory
-        td
-          a(href=dir.relative) [#{dir.name}]
-        td(data-raw=dir.modified.raw)
-          span
-            span(data-view='desktop')=dir.modified.formatted[0]
-            span(data-view='mobile')=dir.modified.formatted[1]
-        td -
-        td -
+      if !dir.hidden
+        tr.directory
+          td
+            a(href=dir.relative) [#{dir.name}]
+          td(data-raw=dir.modified.raw)
+            span
+              span(data-view='desktop')=dir.modified.formatted[0]
+              span(data-view='mobile')=dir.modified.formatted[1]
+          td -
+          td -
     each file in contents.files
-      tr.file
-        if !file.hidden
+      if !file.hidden
+        tr.file
           td(data-raw=file.name)
             if file.media == true
               a.preview(href=file.relative)=file.name

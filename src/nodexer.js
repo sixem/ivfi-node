@@ -76,7 +76,61 @@ const handle = async (directory, req, res, next, executed = null) =>
 				}
 			}
 
-			/* Collected data has some value stored in a 'raw' key that we need to access. */
+			/* Check for `.indexignore` file. */
+			var ignore = await data.contents.files.find(file => file.name === '.indexignore');
+
+			/** If `.indexignore` is present. */
+			if(ignore)
+			{
+				/** Store file objects and keys. */
+				var fileObject = {}, fileKeys = {};
+
+				(data.contents.files).forEach((file) => fileObject[file.name] = file);
+				(data.contents.directories).forEach((file) => fileObject[file.name + '/'] = file);
+				
+				fileKeys = Object.keys(fileObject);
+
+				/** Read `.indexignore` file. */
+				await fsp.readFile(path.join(directory, ignore.relative), 'utf8').then(fileBuffer =>
+				{
+					/** Split `.indexignore` by new line. */
+					var ignoredFiles = fileBuffer.toString('utf-8').split(/\r?\n/);
+
+					/** Iterate over `.indexignore` entries. */
+					for(let i = 0; i < ignoredFiles.length; i++)
+					{
+						var input = ignoredFiles[i];
+
+						/** Break on empty input. */
+						if(!input || input.length === 0)
+						{
+							break;
+						}
+
+						if(Object.prototype.hasOwnProperty.call(fileObject, input))
+						{
+							fileObject[input].hidden = true;
+						} else if(input.includes('*'))
+						{
+							/** Escape input and create new regular expression. */
+							var regex = f.wildcardExpression(input);
+
+							/** Check file/directory names, match against expression - hide on match. */
+							fileKeys.forEach((key) =>
+							{
+								if(regex.test(key))
+								{
+									fileObject[key].hidden = true;
+								}
+							});
+						}
+					}
+				});
+
+				ignore.hidden = true;
+			}
+
+			/* Collected data has some value stored in a `raw` key that we need to access. */
 			var raw = ['size', 'modified'].includes(user.sorting.sort_by) ? true : false;
 
 			/* Apply file sorting. */
