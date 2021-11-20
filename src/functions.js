@@ -433,7 +433,7 @@ module.exports.wildcardExpression = (wildcard) =>
 	/** Escape input and create new regex expression. */
 	var escaped = wildcard.replace(/[.+^${}()|[\]\\]/g, '\\$&');
 
-	return new RegExp(`^${escaped.replace(/\*/g,'.*').replace(/\?/g,'.')}$`,'i');
+	return new RegExp(`^${escaped.replace(/\*/g,'.*')}$`);
 };
 
 /* Adds a leading character to a string if it does not already exist. */
