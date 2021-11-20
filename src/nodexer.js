@@ -76,25 +76,64 @@ const handle = async (directory, req, res, next, executed = null) =>
 				}
 			}
 
-			/* Check for .indexignore */
+			/* Check for `.indexignore` file. */
 			var ignoreContent = null;
+			var ignore = await data.contents.files.find(file => file.name === '.indexignore');
 
-			var ignore = await data.contents.files.find(file => file.name === '.indexignore')
+			/** If `.indexignore` is present. */
+			if(ignore)
+			{
+				/** Store file objects and keys. */
+				var fileObject = {}, fileKeys = {};
 
-			if (ignore) {
-				await fsp.readFile(path.join(directory, ignore.relative), 'utf8').then(fileBuffer => {
-					ignoreContent = fileBuffer.toString();
-					var arr = ignoreContent.split('\n')
+				(data.contents.files.concat(data.contents.directories)).forEach((file) =>
+				{
+					fileObject[file.name] = file;
+				});
+				
+				fileKeys = Object.keys(fileObject);
 
-					arr.forEach(element => {
-						var ignoredFile = data.contents.files.find(file => file.name === element)
-						ignoredFile.hidden = true
-					})
-				})
-				ignore.hidden = true
+				/** Read `.indexignore` file. */
+				await fsp.readFile(path.join(directory, ignore.relative), 'utf8').then(fileBuffer =>
+				{
+					/** Split `.indexignore` by new line. */
+					var ignoredFiles = fileBuffer.toString('utf-8').split(/\r?\n/);
+
+					/** Iterate over `.indexignore` entries. */
+					for(let i = 0; i < ignoredFiles.length; i++)
+					{
+						var input = ignoredFiles[i];
+
+						/** Break on empty input. */
+						if(!input || input.length === 0)
+						{
+							break;
+						}
+
+						if(fileObject.hasOwnProperty(input))
+						{
+							fileObject[input].hidden = true;
+						} else if(input.includes('*'))
+						{
+							/** Escape input and create new regular expression. */
+							var regex = f.wildcardExpression(input);
+
+							/** Check file/directory names, match against expression - hide on match. */
+							fileKeys.forEach((key) =>
+							{
+								if(regex.test(key))
+								{
+									fileObject[key].hidden = true;
+								}
+							});
+						}
+					}
+				});
+
+				ignore.hidden = true;
 			}
 
-			/* Collected data has some value stored in a 'raw' key that we need to access. */
+			/* Collected data has some value stored in a `raw` key that we need to access. */
 			var raw = ['size', 'modified'].includes(user.sorting.sort_by) ? true : false;
 
 			/* Apply file sorting. */
