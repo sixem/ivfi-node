@@ -37,13 +37,12 @@ module.exports.dir = {
 		/* Read directory. */
 		var files = await fsp.readdir(_path);
 
-		/* Hide hidden files, invalid filenames (#) and (some) windows specific directories ($). */
-		files = files.filter((file) => {
-			if(['.', '$'].includes(file[0]) || file.includes('#'))
+		/* Filter out hidden files (.), invalid filenames (#) and (some) windows specific directories ($). */
+		files = files.filter((file) =>
+		{
+			if((['.', '$'].includes(file[0]) || file.includes('#'))
+				&& file !== '.indexignore')
 			{
-				if (file === '.indexignore'){
-					return true;
-				}
 				return false;
 			} else {
 				return true;
@@ -426,6 +425,15 @@ module.exports.trim = {
 module.exports.addTrailing = (s, char) =>
 {
 	return s.endsWith(char) ? s : (s + char);
+};
+
+/** Converts a wildcard string into a regular expression. */
+module.exports.wildcardExpression = (wildcard) =>
+{
+	/** Escape input and create new regex expression. */
+	var escaped = wildcard.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+
+	return new RegExp(`^${escaped.replace(/\*/g,'.*').replace(/\?/g,'.')}$`,'i');
 };
 
 /* Adds a leading character to a string if it does not already exist. */
