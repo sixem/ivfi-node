@@ -85,10 +85,8 @@ const handle = async (directory, req, res, next, executed = null) =>
 				/** Store file objects and keys. */
 				var fileObject = {}, fileKeys = {};
 
-				(data.contents.files.concat(data.contents.directories)).forEach((file) =>
-				{
-					fileObject[file.name] = file;
-				});
+				(data.contents.files).forEach((file) => fileObject[file.name] = file);
+				(data.contents.directories).forEach((file) => fileObject[file.name + '/'] = file);
 				
 				fileKeys = Object.keys(fileObject);
 
