@@ -4,7 +4,7 @@
 
 # nodexer
 
-<img alt="npm" src="https://img.shields.io/npm/v/nodexer?style=flat-square"> <img alt="David" src="https://img.shields.io/david/sixem/nodexer?style=flat-square"> <img alt="Travis (.com)" src="https://img.shields.io/travis/com/sixem/nodexer?style=flat-square">
+<img alt="npm" src="https://img.shields.io/npm/v/nodexer?style=flat-square"> <img alt="Travis (.com)" src="https://img.shields.io/travis/com/sixem/nodexer?style=flat-square">
 
 A directory indexer written in Node.
 
@@ -15,13 +15,16 @@ You can view a demo of the script [here](https://index.five.sh/).
 
 Please note that this is a very early version of this project, so it may contain a few bugs.
 
-# Install
+## Docs
+:link: <https://sixem.github.io/nodexer/>
+
+## Install
 ### NPM
-```
+```shell
 npm install nodexer
 ```
 
-# Usage
+## Usage
 Require Nodexer:
 ```javascript
 var nodexer = require('nodexer');
@@ -50,14 +53,14 @@ var server = nodexer.run(3000, 'E:/Downloads', {
 ```
 This will also start a webserver on `http://localhost:3000/` with the path set to `E:/Downloads`. In this example it'll also enable a basic authentication system and a few other options options.
 
-A documentation of the available options can be found [here](https://github.com/sixem/nodexer/wiki/Documentation#options).
+A documentation of the available options can be found [here](https://sixem.github.io/nodexer/#/docs/options/).
 
-# Development
+## Development
 
 *Note: The development environment utilizes ES6.*
 
 Clone the repository and install the required `npm` packages:
-```
+```shell
 git clone https://github.com/sixem/nodexer
 cd nodexer
 npm install
@@ -74,7 +77,7 @@ Then start `run.js` through `nodemon`:
 ```
 npm run dev
 ```
-# Compile
+## Compile
 To compile the script run:
 ```
 npm run compile
@@ -94,7 +97,7 @@ As always, use this script at your own risk. There may exist bugs that i do not 
 
 MIT License
 
-Copyright (c) 2020 ему (sixem)
+Copyright (c) 2021 ему (sixem)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
