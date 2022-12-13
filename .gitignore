@@ -1,4 +1,18 @@
-node_modules/
-dist/
-lib/
+# Directories
+dist
+packed
+node_modules
+run.ts
 run.js
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
