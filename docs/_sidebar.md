@@ -1,7 +1,7 @@
 <!-- docs/_sidebar.md -->
 
 * [Home](README.md)
-* [Documentation](docs/)
-    * [Functions](docs/functions/)
-    * [Options](docs/options/)
+* [Usage](usage.md)
+* [Configuration](configuration.md)
+* [Building](building.md)
 * [License](license.md)

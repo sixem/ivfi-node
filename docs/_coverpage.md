@@ -1,12 +1,12 @@
 <!-- _coverpage.md -->
 
-![logo](./favicon.png)
+![logo](./greeterLogo.svg)
 
-# nodexer
+# IVFi-Node
 
-> A directory indexer written in Node
+> The image and video friendly indexer
 
-- A customizable, image and video friendly indexer
+- A directory indexer written in Node
 
-[GitHub](https://github.com/sixem/nodexer/)
-[Get Started](#install)
+[GitHub](https://github.com/sixem/ivfi-node/)
+[Get Started](usage.md)
