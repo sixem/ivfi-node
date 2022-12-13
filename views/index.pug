@@ -1,16 +1,41 @@
 doctype html
 head
-  meta(charset='utf-8')
-  meta(name='viewport' content='width=device-width, initial-scale=1')
+  meta(
+    charset='utf-8'
+  )
+  meta(
+    name='viewport'
+    content='width=device-width, initial-scale=1'
+  )
   title Index of #{req}
-  link(rel='shortcut icon' href='/favicon.png' type='image/png')
-  link(rel='stylesheet' type='text/css' href='/css/style.css')
-  if config.style.themes.set
-    link(rel='stylesheet' type='text/css' href=config.style.themes.path + config.style.themes.set + (config.style.themes.set.endsWith('.css') ? '' : '.css'))
-body.directory(class=config.style.compact == true ? 'compact' : '')
-  .top-bar
-    .extend.ns &dtrif;
-    .directory-info
+  link(
+    rel='shortcut icon'
+    type=(config.icon.mime || 'image/png')
+    href=(config.icon.path || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAxlBMVEUAAAAkgc4kc7Ukc7Ykc7Ukc7Ukc7Ukc7UkgtAkgc8lgtAlgtAkdLYlgtAkcrQkgc4kgc8kgs8kgs8kc7QkdLckgtAkc7Ukgs8kgc8kc7Ukgc4keL4keL4kfcgkgs8kfsglgtAkgs8kc7Ukgs8lgtAkc7UlgtAkgc8kgtAkc7Ukgc4kc7Ukc7Ulgs8kgMwkc7Ulgs8kc7Ukc7Ulgs8kc7UlgtEkgc4kdLclhNQkcbEkcrIkecAkd7skf8skfskkfMUkfcYke8IAiWkWAAAAM3RSTlMAuMkM8Z2igutj+ce0pnVytaydkYh5Tk0/NzMqGhEJBd3V0M++m5aOVS4i8+bguKuBbFqyyWhxAAACKUlEQVR42u3Y6W7aQBTF8Sk0NvsSCIQ9e9J071yM7dpN+/4vVamfj7GpPGci5f5fgJ/g+kjGaJqmaZqmadqra/0jvA/OCgpC47hVIMcLjNMGAiIK7kW8CkIRr4IPIn4FDSEK8BfgVxCKZ0FPPAsacppg06zczgVAPr6v3KfG2awKwGk3MyIAN/ENkMA3QAa+AbL2DQh8A6TpGzDzDRj4BoQKePOA/zvCJEnlUEsy3Z4OSNLsJc+jeuq0bvvt5gmAgyRZHsfxvqZsZK1tDasDJPkZx7b2vmAA/vx9ZOuvWw1wSDLw+bU0QgBQFEfWTXMAQD+AddVVFUD6yx3ALqvcQLS3zrooB6TZ3rrrHADACbhrXAHwAgCcbwDfIP0GJHd5A/NSQJpZlz0DAPMGW6Yc8Mcl4K4C4LdLwGM5QHKXgDYAMIfYXgIAc4g7GwBgPgTXBgCYQzwGAOoQfwMA6hA/AQB1iFcAQB3iHQAQhziC7wXMIT5HAOYQDxGAOsQIQBxiu0YA4kPw2SAAcYhHEEAc4kcIIA5xGwKIQ7yEAN4NdpoQQBtie2sggDfEfQzgDfEFBvCGeI4BvCF+xgDiayEG0Ib4rgBAG+KHAgBxiDGANsSXBQDWDdoNBvRYQ3xlcFPeEOMWxL8mcDecIe5siwALzhAPTWETxkPQNUf66n6Ir7fmWFPXQ9zfmeMt/q1B5AjQfTLlrb5Peu/qbzR+GC6Npmmapmmapr3G/gJCrXEWaiq1VwAAAABJRU5ErkJggg==')
+  )
+  link(
+    rel='stylesheet'
+    type='text/css'
+    href='/css/style.css'
+  )
+  if (config.style.themes.set && config.style.themes.pool[config.style.themes.set] && config.style.themes.pool[config.style.themes.set].path)
+    link(
+      rel='stylesheet'
+      type='text/css'
+      href=config.style.themes.pool[config.style.themes.set].path
+    )
+  script(
+    type='text/javascript'
+    defer
+    src='/main.js'
+  )
+body.rootDirectory(
+  class=config.style.compact == true ? 'compact' : ''
+  optimize=config.performance
+)
+  .topBar
+    .extend.ns ⚙
+    .directoryInfo
       div(data-count='size')=stats.total.size
       div(
         data-raw=stats.newest.file > 0 ? stats.newest.file : false
@@ -21,75 +46,95 @@ body.directory(class=config.style.compact == true ? 'compact' : '')
   .path
     | Index of !{path}
   if readme.content
-    details(open=(readme.collapsed ? false : ''))
-      summary(class='noselect') README.md !{' '}
+    details.readmeContainer(open=(readme.toggled ? false : ''))
+      summary.
+        README.md
       div(class='contents') !{readme.content}
-  table
-    thead
-      tr
-        th
-          span(sortable='true' title='Sort by filename') Filename
-          span.sort-indicator
-        th
-          span(sortable='true' title='Sort by modification date') Modified
-          span.sort-indicator
-        th
-          span(sortable='true' title='Sort by filesize') Size
-          span.sort-indicator
-        th
-          span(sortable='true' title='Sort by filetype') Options
-          span.sort-indicator
-    tr.parent
-      td
-        a(href=parent) [Parent Directory]
-      td -
-      td -
-      td -
-    each dir in contents.directories
-      if !dir.hidden
-        tr.directory
-          td
-            a(href=dir.relative) [#{dir.name}]
-          td(data-raw=dir.modified.raw)
-            span
-              span(data-view='desktop')=dir.modified.formatted[0]
-              span(data-view='mobile')=dir.modified.formatted[1]
-          td -
-          td -
-    each file in contents.files
-      if !file.hidden
-        tr.file
-          td(data-raw=file.name)
-            if file.media == true
-              a.preview(href=file.relative)=file.name
-            else
-              a(href=file.relative)=file.name
-          td(data-raw=file.modified.raw)
-            span
-              span(data-view='desktop')=file.modified.formatted[0]
-              span(data-view='mobile')=file.modified.formatted[1]
-          td(data-raw=file.size.raw)=file.size.readable
-          td.download(data-raw=file.type)
-            a(href=file.relative download='' filename=file.name)
-              span(data-view='mobile') [Save]
-              span(data-view='desktop') [Download]
+  div.tableContainer
+    table
+      thead
+        tr
+          th
+            span(
+              sortable='true'
+              title='Sort by filename'
+            ) Filename
+            span.sortingIndicator
+          th
+            span(
+              sortable='true'
+              title='Sort by modification date'
+            ) Modified
+            span.sortingIndicator
+          th
+            span(
+              sortable='true'
+              title='Sort by filesize'
+            ) Size
+            span.sortingIndicator
+          th
+            span(
+              sortable='true'
+              title='Sort by filetype'
+            ) Options
+            span.sortingIndicator
+      tr.parent
+        td
+          a(href=parent) [Parent Directory]
+        td -
+        td -
+        td -
+      each dir in contents.directories
+        if !dir.hidden
+          tr.directory
+            td
+              a(href=dir.relative) [#{dir.name}]
+            td(data-raw=dir.modified.raw)
+              span
+                span(data-view='desktop')=dir.modified.formatted[0]
+                span(data-view='mobile')=dir.modified.formatted[1]
+            td -
+            td -
+      each file in contents.files
+        if !file.hidden
+          tr.file
+            td(data-raw=file.name)
+              if file.media == true
+                a.preview(href=file.relative)=file.name
+              else
+                a(href=file.relative)=file.name
+            td(data-raw=file.modified.raw)
+              span
+                span(data-view='desktop')=file.modified.formatted[0]
+                span(data-view='mobile')=file.modified.formatted[1]
+            td(data-raw=file.size.raw)=file.size.readable
+            td.download(data-raw=file.type)
+              a(href=file.relative download='' filename=file.name)
+                span(data-view='mobile') [Save]
+                span(data-view='desktop') [Download]
   .bottom
-    div Page generated in #{rendered} seconds
+    div.currentPageInfo.
+      Page generated in #{rendered} seconds
     div
       | Browsing 
       span #{req}
-  .filter-container
-    div
-      input(type='text' placeholder='Search ..' value='')
-      .status(data-view='desktop')
-    .close
-      span [Close]
-  script(type='text/javascript' src='/js/vendors.js')
-  script(type='text/javascript' src='/js/gallery.js')
-  script(type='text/javascript' src='/js/preview.js')
+    div.referenceGit
+      a(
+        target='_blank'
+        href='https://ivfi.io/'
+      ).
+        IVFi
 
-  script(type='text/javascript').
-    var config = !{JSON.stringify(config)};
-    config.mobile = Modernizr.mq('(max-width: 640px)');
+  div.filterContainer(
+    style='display: none;'
+  )
+    input(
+      type='text'
+      placeholder='Search ...'
+      value=''
+    )
 
-  script(type='text/javascript' src='/js/main.js')
+  script#__IFVI_DATA__(
+    type='text/json'
+  ).
+    !{JSON.stringify(config)}
