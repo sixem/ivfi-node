@@ -1,7 +1,7 @@
 <p align="center">
-  <img width="189" height="189" src="./icon.svg">
+  <img height="100" src="./icon.svg">
 </p>
-
+<br/>
 <h2 align="center">The image and video friendly indexer</h2>
 
 <p align="right">
