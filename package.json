@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "clean": "rimraf ./dist ./packed",
+    "compile": "webpack --config webpack.config.js",
     "compile:production": "webpack --config webpack.config.js --mode=production",
     "compile:development": "webpack --config webpack.config.js --mode=development",
     "transpile:tsc": "npx tsc",
