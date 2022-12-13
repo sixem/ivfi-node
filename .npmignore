@@ -1,9 +1,28 @@
-node_modules/
-src/
-public/
-build.js
-run.js
-.env
-.babelrc
-.eslintrc.json
-.nodemon.json
+# Directories
+node_modules
+docs
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Unneeded "build only" directories
+src/core/classes
+src/core/components
+src/core/config
+src/core/modules
+src/core/types
+src/assets
+src/css
+
+# Unneeded "build only" files
+src/core/data.json
+src/core/main.ts
