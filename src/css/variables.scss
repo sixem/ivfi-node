@@ -1,0 +1,68 @@
+/* Root values */
+$root: (
+  "color-a-download": #6270ae,
+  "color-a-download-visited": #515978,
+  "color-a-file": #9b9b9b,
+  "color-a-file-visited": #757575,
+  "color-a-media": #627be3,
+  "color-a-media-hover": #627be3,
+  "color-a-media-visited": #475282,
+  "color-a-regular": #f45656,
+  "color-a-parent": #ffc752,
+  "color-body": #d6d3ce,
+  "color-border-main": #19191d,
+  "color-border-settings-menu": #17171b,
+  "color-background-settings-menu": rgba(18 18 22 / 65%),
+  "color-background-settings-item-hover": #17171b,
+  "color-background-body": #0f0f13,
+  "color-background-table": #121318,
+  "color-header-table": #fff,
+  "color-background-table-hover": rgba(23 26 40 / 55%)
+);
+
+/* Gallery */
+$gallery: (
+  "height-top-bar": 31px,
+  "blur-intensity": 3px,
+  "color-border": #161616de,
+  "color-top-bar": #fff,
+  "color-a-download": #6173c5,
+  "color-a-download-hover": #6a83f5,
+  "color-list-item": #d4d4d4,
+  "color-list-item-selected": #fff,
+  "color-list-item-hover": auto,
+  "color-background-overlay": rgb(4 4 4 / 80%),
+  "color-background-list-selected": #1c2333,
+  "color-background-list-selected-hover": #1c2333,
+  "color-background-list-item-hover": rgb(44 54 81 / 20%),
+  "color-background-top-bar": rgba(25 25 32 / 70%),
+  "color-list-selected-border": #fbfcff,
+  "width-list-selected-border": 5px
+);
+
+/* Font sizing */
+$font-sizing: (
+  /* General */
+  "default": 14px,
+  /* Gallery */
+  "gallery": 13px,
+  /* Table header (Filename, Modified et cetera.) */
+  "table-header": 13px,
+  /* Fixed top bar */
+  "top-bar": 12px,
+  /* Modified and size column */
+  "row-num": 13px,
+  /* Filename column */
+  "row-file": 13px
+);
+
+/* Breakpoints */
+$breakpoints: (
+  "mobile-max-width": 768px
+);
+
+/* Table column width values for deskop and mobile */
+$table-sizing: (
+  "desktop": (50%, 20%, 15%, 11.5%),
+  "mobile": (40.5%, 21%, 19%, 19.5)
+);
