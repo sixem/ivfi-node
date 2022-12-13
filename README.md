@@ -1,3 +1,4 @@
+<br/>
 <p align="center">
   <img height="100" src="./icon.svg">
 </p>
