@@ -48,7 +48,7 @@ git clone https://github.com/sixem/ivfi-node
 cd ivfi-node
 npm install
 ```
-Create a `run.js` file with a simple initialization of the script:
+Create a `run.ts` file with a simple initialization of the script:
 ```js
 import ivfi from './src/index';
 
@@ -65,7 +65,7 @@ npm run compile:development
 ```
 Start the server:
 ```js
-node run.js
+node --loader ts-node/esm run.ts
 ```
 Any changes made to the client side code, will require a recompiled `dist` directory, while any changes made to the server side code will simply require a restart of the server.
 
