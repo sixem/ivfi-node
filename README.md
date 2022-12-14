@@ -3,8 +3,8 @@
   <img height="100" src="./icon.svg">
 </p>
 <br/>
-<h2 align="center">The image and video friendly indexer</h2>
-
+<h3 align="center"><i>The image and video friendly indexer</i></h3>
+<br/><br/>
 <p align="right">
 	<img alt="npm" src="https://img.shields.io/npm/v/ivfi"> <img src="https://app.travis-ci.com/sixem/ivfi-node.svg?branch=master&amp;status=passed" alt="build:passed">
 </p>
@@ -53,11 +53,13 @@ Create a `run.ts` file with a simple initialization of the script:
 ```js
 import ivfi from './src/index';
 
-const port = 3000, directory = '/var/www/html/';
+const port = 3000;
+const directory = '/var/www/html/';
+
 const server = ivfi(__dirname);
 
 server.run(port, directory, {
-	debug : true
+	debug: true
 });
 ```
 Build the `dist` files that are used on the client side:
