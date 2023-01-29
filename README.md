@@ -1,14 +1,20 @@
 <br/>
-<p align="center">
-  <img height="100" src="./icon.svg">
-</p>
+<div align="center">
+	<img height="100" src="./logo.svg">
+	<br/><br/>
+	<h3 align="center">IVFi-Node</h3>
+	<p align="center"><i>The image and video friendly indexer</i></p>
+</div>
+
 <br/>
-<h3 align="center"><i>The image and video friendly indexer</i></h3>
-<br/><br/>
-<p align="right">
-	<img alt="npm" src="https://img.shields.io/npm/v/ivfi"> <img src="https://app.travis-ci.com/sixem/ivfi-node.svg?branch=master&amp;status=passed" alt="build:passed">
+
+<p align="center">
+<img alt="npm" src="https://img.shields.io/npm/v/ivfi?style=flat-square"> <img alt="Travis (.com)" src="https://img.shields.io/travis/com/sixem/ivfi-node?style=flat-square">
 </p>
 
+<br/><br/>
+
+## About
 IVFi is a directory lister that aims to make it easy to browse web-based directories.
 
 The Indexer is designed to look appealing while also being easy to use. It works with any type of directory, but it has a special focus on image and video files. This is reflected in the many media friendly features it has, where the most prominent ones are hoverable previews and a complete gallery view mode.
@@ -16,7 +22,7 @@ The Indexer is designed to look appealing while also being easy to use. It works
 You can view a demo of the script [here](https://index.five.sh/).
 
 ## Documentation
-:link: <https://ivfi.io/docs/node/>
+[https://ivfi.io/docs/node/](https://ivfi.io/docs/node/#/usage)
 
 ## Quick setup
 ### Install via npm
