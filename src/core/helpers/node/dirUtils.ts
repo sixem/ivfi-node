@@ -39,41 +39,36 @@ type TCollected = {
 	};
 };
 
-const dirScan = async (path: string, opts: TOptions = {}): Promise<TFile[]> =>
+const dirScan = async (path: string, _options: TOptions = {}): Promise<TFile[]> =>
 {
-	/* Filter out hidden files (.), invalid filenames (#) and (some) windows specific directories ($) */
-	const files = (await fsp.readdir(path)).filter((file) =>
-	{
-		if((['.', '$'].includes(file[0]) || file.includes('#'))
-			&& file !== '.indexignore')
-		{
-			return false;
-		} else {
-			return true;
-		}
-	});
+	let files = [];
 
-	/* Map to include extensions etc */
-	let mappedFiles = files.map((file) =>
+	(await fsp.readdir(path, {
+		withFileTypes: true
+	})).forEach((dirEnt =>
 	{
-		return {
-			basename: file,
-			extension: file.split('.').pop().toLowerCase()
-		};
-	});
+		if(!((['.', '$'].includes(dirEnt.name[0]) || dirEnt.name.includes('#'))
+			&& dirEnt.name !== '.indexignore'))
+		{
+			files.push({
+				basename: dirEnt.name,
+				extension: dirEnt.name.split('.').pop().toLowerCase()
+			});
+		}
+	}));
 
 	/* Filter extensions if include is set */
-	if(opts.include
-		&& Array.isArray(opts.include)
-		&& opts.include.length > 0)
+	if(_options.include
+		&& Array.isArray(_options.include)
+		&& _options.include.length > 0)
 	{
-		mappedFiles = mappedFiles.filter((file: TFile) =>
+		files = files.filter((file: TFile) =>
 		{
-			return (opts.include).includes(file.extension);
+			return (_options.include).includes(file.extension);
 		});
 	}
 
-	return mappedFiles;
+	return files;
 };
 
 /**
@@ -83,7 +78,7 @@ const dirCollect = async (
 	pathInfo: {
 		[key: string]: any;
 	},
-	opts: {
+	_options: {
 		[key: string]: any;
 	} = {}
 ): Promise<TCollected> =>
@@ -109,7 +104,8 @@ const dirCollect = async (
 	const extensions = options.get().media.extensions;
 	const exclude = options.get('exclude');
 
-	await asyncForEach(await dirScan(pathInfo.real), async(file: TFile) =>
+	/* Scan directory and get file information */
+	await Promise.all((await dirScan(pathInfo.real)).map(async (file: TFile) =>
 	{
 		try
 		{
@@ -125,7 +121,7 @@ const dirCollect = async (
 		{
 			console.error(error);
 		}
-	});
+	}));
 
 	const filter = options.get('filter');
 
@@ -140,7 +136,7 @@ const dirCollect = async (
 	}
 
 	const offset = {
-		client: opts.timezone.offset
+		client: _options.timezone.offset
 	};
 
 	const format = options.get('format');
@@ -196,6 +192,9 @@ const dirCollect = async (
 	return data;
 };
 
+/**
+ * Filters files based on a filter object
+ */
 const dirFilter = (
 	files: TFile[],
 	filter: {
