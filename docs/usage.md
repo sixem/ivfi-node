@@ -28,6 +28,13 @@ server.run(port, directory, options);
 ## Server Functions
 
 ### ivfi.run()
+
+Starts a server with the Indexer on the set port browsing the set directory.
+
+To see what options can be passed see [options](configuration.md).
+
+Returns the `server` instance.
+
 ```js
 import ivfi from 'ivfi';
 
@@ -36,12 +43,6 @@ let server = ivfi.run(port, directory, options = {})
 * port: `[integer]`
 * directory: `'string'`
 * options: `{object}`
-
-Starts a server with the Indexer on the set port browsing the set directory.
-
-To see what options can be passed see [options](options.md).
-
-Returns the `server` instance.
 
 #### Returns: `{Object}`
 

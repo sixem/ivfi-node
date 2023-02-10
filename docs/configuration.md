@@ -1,13 +1,11 @@
 <h1 align="center">Options</h1>
-
+<p align="center">
+IVFi-Node supports a variety of options. An object containing configurable variables can be passed to the script during initialization.<br/><br/>This page contains the full documentation of the available options.
+</p>
 <br/>
 
 ## Example
-An `{object}` containing configurable options can be passed to the Indexer in order to customize it.
-
-This page contains the full documentation of the available options.
-
-An example of how to pass options:
+A basic example of some options being passed to the script:
 ```js
 /** Import the package */
 import ivfi from 'ivfi';
@@ -18,7 +16,7 @@ const port = 3000,
 
 /** Customizable options */
 const options = {
-	debug: true,
+    debug: true,
     gallery: {
         enabled: true
     },
@@ -31,11 +29,13 @@ const options = {
 const server = ivfi.run(port, directory, options);
 ```
 
-## Authentication
-### *authentication.users*
+<br/><br/>
+
+# Authentication
+### *authentication → users*
 An object containing users.
 ```js
-{
+Options {
     authentication: {
         users: {
             'user': 'password'
@@ -46,11 +46,13 @@ An object containing users.
 - type: `{object}`
 default: `null`
 
-## Format
-### *format.sizes*
+<br/><br/>
+
+# Format
+### *format → sizes*
 Unit display of file sizes.
 ```js
-{
+Options {
     format: {
         sizes: [' B', ' kiB', ' MiB', ' GiB', ' TiB']
     }
@@ -61,12 +63,12 @@ default: `[' B', ' kiB', ' MiB', ' GiB', ' TiB']`
 
 ---
 
-### *format.date*
+### *format → date*
 Date format as per [function.date.php](https://www.php.net/manual/en/function.date.php).
 
 First key is the desktop format, second key is the mobile format.
 ```js
-{
+Options {
     format: {
         date: ['d/m/y H:i', 'd/m/y']
     }
@@ -77,13 +79,15 @@ default: `['d/m/y H:i', 'd/m/y']`
 
 ---
 
-## Sorting
-### *sorting.enabled*
+<br/><br/>
+
+# Sorting
+### *sorting → enabled*
 If default sorting options should be enabled.
 
 This only applies to default sorting, it will always be enabled if the client has any sorting preferences set.
 ```js
-{
+Options {
     sorting: {
         enabled: false
     }
@@ -93,12 +97,12 @@ default: `false`
 
 ---
 
-### *sorting.types*
+### *sorting → types*
 What item types that should be sortable.
 
 `0` = Both. `1` = Files only. `2` = Directories only.
 ```js
-{
+Options {
     sorting: {
         types: 0
     }
@@ -109,12 +113,12 @@ default: `0`
 
 ---
 
-### *sorting.sortBy*
+### *sorting → sortBy*
 Default sorting state.
 
 Available options are `'name'`, `'modified'`, `'type'` and `'size'`.
 ```js
-{
+Options {
     sorting: {
         sortBy: 'name'
     }
@@ -125,12 +129,12 @@ default: `'name'`
 
 ---
 
-### *sorting.ascending*
+### *sorting → ascending*
 Default sorting order.
 
 `1` = Ascending. `0` = Descending.
 ```js
-{
+Options {
     sorting: {
         ascending: 1
     }
@@ -139,12 +143,13 @@ Default sorting order.
 - type: `[integer]`
 default: `1`
 
+<br/><br/>
 
-## Gallery
-### *gallery.enabled*
+# Gallery
+### *gallery → enabled*
 Enables or disables the gallery mode.
 ```js
-{
+Options {
     gallery: {
         enabled: true
     }
@@ -155,10 +160,10 @@ default: `true`
 
 ---
 
-### *gallery.reverseOptions*
+### *gallery → reverseOptions*
 Whether gallery images should have reverse search options or not.
 ```js
-{
+Options {
     gallery: {
         reverseOptions: false
     }
@@ -169,10 +174,10 @@ default: `false`
 
 ---
 
-### *gallery.scrollInterval*
+### *gallery → scrollInterval*
 Adds a forced break between scroll events in the gallery (`ms`).
 ```js
-{
+Options {
     gallery: {
         scrollInterval: 50
     }
@@ -183,10 +188,10 @@ default: `50`
 
 ---
 
-### *gallery.listAlignment*
+### *gallery → listAlignment*
 Gallery list alignment where `0` is right and `1` is left.
 ```js
-{
+Options {
     gallery: {
         listAlignment: 0
     }
@@ -197,10 +202,10 @@ default: `0`
 
 ---
 
-### *gallery.fitContent*
+### *gallery → fitContent*
 If images and videos should be forced to fill the available screen space.
 ```js
-{
+Options {
     gallery: {
         fitContent: true
     }
@@ -209,11 +214,13 @@ If images and videos should be forced to fill the available screen space.
 - type: `[boolean]`
 default: `false`
 
-## Preview
-### *preview.enabled*
+<br/><br/>
+
+# Preview
+### *preview → enabled*
 This will display a hoverable preview on videos and images if enabled.
 ```js
-{
+Options {
     preview: {
         enabled: true
     }
@@ -224,10 +231,10 @@ default: `true`
 
 ---
 
-### *preview.hoverDelay*
+### *preview → hoverDelay*
 How long in `ms` before the preview is being shown after hovering.
 ```js
-{
+Options {
     preview: {
         hoverDelay: 75
     }
@@ -238,10 +245,10 @@ default: `75`
 
 ---
 
-### *preview.cursorIndicator*
+### *preview → cursorIndicator*
 Displays a loading cursor while the preview is loading.
 ```js
-{
+Options {
     preview: {
         cursorIndicator: true
     }
@@ -250,22 +257,24 @@ Displays a loading cursor while the preview is loading.
 - type: `[boolean]`
 default: `true`
 
-## Media
-### *media.extensions*
+<br/><br/>
+
+# Media
+### *media → extensions*
 This setting decides which extensions will be marked as `media`.
 
 This means that the extensions included here *will* have previews and *will* be included in the gallery mode.
 
 - type: `{object}`
 
-- ### *media.extensions.image*
+- ### *media → extensions → image*
     Extensions marked as `image`.
 
     - type: `<array>`
     default: `['jpg', 'jpeg', 'gif', 'png', 'ico', 'svg', 'bmp', 'webp']`
 
 
-- ### *media.extensions.video*
+- ### *media → extensions → video*
     Extensions marked as `video`.
 
     - type: `<array>`
@@ -273,7 +282,7 @@ This means that the extensions included here *will* have previews and *will* be 
 
 Example:
 ```js
-{
+Options {
     media: {
         extensions: {
             image: ['jpg', 'jpeg', 'gif', 'png', 'ico', 'svg', 'bmp', 'webp'],
@@ -283,45 +292,47 @@ Example:
 }
 ```
 
-## Style
+<br/><br/>
+
+# Style
 Styling options. 
 
 These options can be changed by the client by opening the settings menu (top right corner).
-### *style.themes*
+### *style → themes*
 - type: `{object} | <array>`
 
-- ### *style.themes.path*
+- ### *style → themes → path*
     Can be set to an absolute path containing themes.
     
     Every `.css` in the set folder (or its child folders) will be treated as a separate theme.
 
     - type: `'string'`
 
-- ### *style.themes.default*
+- ### *style → themes → default*
     Optional.
     
     A theme that will be used as default for any new clients. Takes a theme name *without* the `.css` extension.
 
     - type: `'string'`
 
-    Example:
-    ```js
-    {
-        style: {
-            themes: {
-                path: '/mnt/backend/themes/',
-                default: 'themeName'
-            }
-        }
-    }
-    ```
+Example:
+```js
+Options {
+	style: {
+	    themes: {
+		path: '/mnt/backend/themes/',
+		default: 'themeName'
+	    }
+	}
+}
+```
 
 ---
 
-### *style.compact*
+### *style → compact*
 Enables a more compact and centered style.
 ```js
-{
+Options {
     style: {
         compact: false
     }
@@ -330,13 +341,15 @@ Enables a more compact and centered style.
 - type: `[boolean]`
 default: `false`
 
-## Filter
-### *filter.file*
+<br/><br/>
+
+# Filter
+### *filter → file*
 A `regex` used when filtering out files.
 
 Every filename *passing* the `regex` will be shown.
 ```js
-{
+Options {
     filter: {
         file: false
     }
@@ -347,12 +360,12 @@ default: `false`
 
 ---
 
-### *filter.directory*
+### *filter → directory*
 A `regex` used when filtering out directories.
 
 Every directory name *passing* the `regex` will be shown.
 ```js
-{
+Options {
     filter: {
         directory: false
     }
@@ -361,11 +374,13 @@ Every directory name *passing* the `regex` will be shown.
 - type: `'string' | [boolean]`
 default: `false`
 
-## Readme
-### *readme.enabled*
+<br/><br/>
+
+# README
+### *readme → enabled*
 Whether `README.md` files should be parsed and displayed as a notice above the list of files.
 ```js
-{
+Options {
     readme: {
         enabled: true
     }
@@ -376,10 +391,10 @@ default: `true`
 
 ---
 
-### *readme.hidden*
+### *readme → hidden*
 Automatically hides the `README.md` file from the list of files.
 ```js
-{
+Options {
     readme: {
         hidden: false
     }
@@ -390,12 +405,12 @@ default: `false`
 
 ---
 
-### *readme.toggled*
+### *readme → toggled*
 Sets the default toggled state of `README.md` content.
 
 Example:
 ```js
-{
+Options {
     readme: {
         toggled: true
     }
@@ -404,11 +419,13 @@ Example:
 - type: `[boolean]`
 default: `true`
 
-## Icon
-### *icon.path*
+<br/><br/>
+
+# Icon
+### *icon → path*
 A path to an icon that the template engine should use.
 ```js
-{
+Options {
     icon: {
         path: '/favicon.png'
     }
@@ -419,10 +436,10 @@ default: `null`
 
 ---
 
-### *icon.mime*
+### *icon → mime*
 The icons MIME type.
 ```js
-{
+Options {
     icon: {
         mime: 'image/png'
     }
@@ -431,21 +448,25 @@ The icons MIME type.
 - type: `'string'`
 default: `null`
 
-## Exclude
+<br/><br/>
+
+# Exclude
 Separate from the filter.
 
 These extensions will be *completely* excluded from the file list and will also not be directly accessible as a URL.
 
 Example:
 ```js
-{
+Options {
     exclude: ['exe', '7z', 'jpg']
 }
 ```
 - type: `<array>`
 default: `null`
 
-## Performance
+<br/><br/>
+
+# Performance
 Configures the performance mode.
 
 This mode hides elements that are out of view, increasing the performance for larger directories.
@@ -454,19 +475,21 @@ Setting it to `true` or `false` will enable or disable it respectively. Setting 
 
 Example:
 ```js
-{
+Options {
     performance: 100
 }
 ```
 - type: `[integer]`
 default: `100`
 
-## Processor
+<br/><br/>
+
+# Processor
 Enables the manipulation of the data that is being passed to the template engine.
 
 Example:
 ```js
-{
+Options {
     processor: (data) =>
     {
         const timestamp = Math.round(+new Date() / 1000);
@@ -499,12 +522,14 @@ Example:
 - type: `function`
 default: `null`
 
-## Debug
+<br/><br/>
+
+# Debug
 Enables server and browser logging.
 
 Example:
 ```js
-{
+Options {
     debug: false
 }
 ```

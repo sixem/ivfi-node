@@ -1,10 +1,10 @@
-<h1 align="center">
-  <img src="./logo.svg">
-</h1>
-
-<h3 align="center">
-  <span>The image and video friendly Indexer</span><br>
-</h3>
+<br/>
+<div align="center">
+	<img height="100" src="./logo.svg">
+	<br/><br/>
+	<h3 align="center">IVFi-Node</h3>
+	<p align="center"><i>The image and video friendly indexer</i></p>
+</div>
 
 ---
 ## Introduction
