@@ -12,25 +12,33 @@
 <img alt="npm" src="https://img.shields.io/npm/v/ivfi?style=flat-square"> <img alt="Travis (.com)" src="https://img.shields.io/travis/com/sixem/ivfi-node?style=flat-square">
 </p>
 
+<br/>
+
+<p align="center">
+	<a href="https://index.five.sh/">Demo</a>&nbsp;&nbsp;
+	<a href="https://ivfi.io/docs/node/#/README">Documentation</a>&nbsp;&nbsp;
+	<a href="https://ivfi.io/docs/node/#/configuration">Configuration</a>&nbsp;&nbsp;
+	<a href="https://ivfi.io/docs/node/#/building">Building</a>
+</p>
+
 <br/><br/>
 
-## About
-IVFi is a directory lister that aims to make it easy to browse web-based directories.
+# About
+IVFi-Node is a file directory browser script made in Node and TypeScript.
 
-The Indexer is designed to look appealing while also being easy to use. It works with any type of directory, but it has a special focus on image and video files. This is reflected in the many media friendly features it has, where the most prominent ones are hoverable previews and a complete gallery view mode.
-<br/><br/>
-You can view a demo of the script [here](https://index.five.sh/).
+It is designed to be a comprehensive indexer, with a focus on efficiently handling image and video files. IVFi has a modern and user-friendly interface, offering features such as a gallery view, hoverable previews, and many customization options.
 
-## Documentation
-[https://ivfi.io/docs/node/](https://ivfi.io/docs/node/#/usage)
+This project can be easily set up on most web servers.
 
-## Quick setup
+<br/>
+
+# Quick setup :zap:
 ### Install via npm
 ```shell
 npm install ivfi
 ```
 
-### Usage
+## Usage
 Import package:
 ```js
 import ivfi from 'ivfi';
@@ -47,7 +55,7 @@ This will spin up a webserver on `http://localhost:3000/` with the path set to `
 
 A documentation of the available options can be found [here](https://ivfi.io/docs/node/#/configuration).
 
-## Development
+# Development
 
 Clone the repository and install the required `npm` packages:
 ```shell
@@ -78,7 +86,7 @@ node --loader ts-node/esm run.ts
 ```
 Any changes made to the client side code, will require a recompiled `dist` directory, while any changes made to the server side code will simply require a restart of the server.
 
-## Building
+# Building
 To package the project:
 ```bash
 npm run transpile:pack
