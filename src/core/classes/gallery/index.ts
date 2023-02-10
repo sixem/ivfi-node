@@ -1,6 +1,6 @@
 /** Vendors */
 import cookies from 'js-cookie';
-import Swipe, { EventData } from 'vanilla-swipe';
+import { SwipeEvent } from '../../vendors/swiped-events';
 /** Config */
 import data from '../../config/data';
 import { user } from '../../config/config';
@@ -138,7 +138,7 @@ export default class galleryClass
 		this.defaults = data;
 
 		return this.defaults;
-	};
+	}
 
 	/**
 	 * Initiates the class
@@ -209,7 +209,7 @@ export default class galleryClass
 		{
 			this.list.style.display = 'none';
 		}
-	};
+	}
 
 	/**
 	 * Preloads an image
@@ -272,7 +272,7 @@ export default class galleryClass
 				resolve({ src, img: null, dimensions: null, cancelled: true });
 			});
 		});
-	};
+	}
 
 	/**
 	 * Checks if an element has a scrollbar
@@ -291,7 +291,7 @@ export default class galleryClass
 		}, height);
 
 		return height > window.innerHeight;
-	};
+	}
 
 	/**
 	 * Encodes a URL
@@ -308,7 +308,7 @@ export default class galleryClass
 		encoded = encoded.replace('+', '%2B');
 
 		return encoded;
-	};
+	}
 
 	/**
 	 * Gets the extension from a filename
@@ -316,7 +316,7 @@ export default class galleryClass
 	private getExtension = (filename: string): string =>
 	{
 		return filename.split('.').pop().toLowerCase();
-	};
+	}
 
 	/**
 	 * Checks if the filename is an image
@@ -326,7 +326,7 @@ export default class galleryClass
 		return this.options.extensions.image.includes(
 			extension ? extension: this.getExtension(filename)
 		);
-	};
+	}
 
 	/**
 	 * Checks if the filename is a video
@@ -336,20 +336,18 @@ export default class galleryClass
 		return this.options.extensions.video.includes(
 			extension ? extension: this.getExtension(filename)
 		);
-	};
+	}
 
 	/**
 	 * Filters an array of items to make sure it only contains videos and images 
 	 */
 	private filterItems = (items: Array<TGalleryTableItem>) =>
 	{
-		return items.filter((item: {
-			name: string;
-		}): boolean =>
+		return items.filter((item: { name: string }): boolean =>
 		{
 			return this.isImage(item.name) || this.isVideo(item.name);
 		});
-	};
+	}
 
 	/**
 	 * Gets the width of the scrollbar
@@ -380,7 +378,7 @@ export default class galleryClass
 		outer.parentNode.removeChild(outer);
 
 		return scrollbarWidth;
-	};
+	}
 
 	/**
 	 * Limits the body (hides overflow etc.)
@@ -411,7 +409,6 @@ export default class galleryClass
 			}
 
 			DOM.style.set(body, {
-				'max-height': 'calc(100vh - var(--height-gallery-top-bar))',
 				'overflow': 'hidden'
 			});
 		} else {
@@ -421,7 +418,6 @@ export default class galleryClass
 			if(Object.prototype.hasOwnProperty.call(this.data, 'body'))
 			{
 				DOM.style.set(body, {
-					'max-height': this.data.body['max-height'],
 					'overflow': this.data.body['overflow']
 				});
 			}
@@ -430,7 +426,7 @@ export default class galleryClass
 				'padding-right': 'unset'
 			});
 		}
-	};
+	}
 
 	/**
 	 * Checks for an active gallery DOM element
@@ -440,7 +436,7 @@ export default class galleryClass
 		this.container = document.body.querySelector(':scope > div.rootGallery');
 
 		return this.container ? true: false;
-	};
+	}
 
 	/**
 	 * Shows or hides the gallery
@@ -550,7 +546,7 @@ export default class galleryClass
 
 			this.optimize.attemptRefresh();
 		}
-	};
+	}
 
 	/**
 	 * Sets the busy state (while loading images/videos)
@@ -576,7 +572,7 @@ export default class galleryClass
 		}
 
 		return this.data.busy;
-	};
+	}
 
 	/**
 	 * Enables the optimizer (performance mode) on the gallery list
@@ -672,7 +668,7 @@ export default class galleryClass
 		});
 
 		return this.optimize;
-	};
+	}
 
 	/**
 	 * Populates the gallery table
@@ -699,7 +695,7 @@ export default class galleryClass
 		this.table = table;
 
 		return table;
-	};
+	}
 
 	/**
 	 * Updating functions
@@ -718,7 +714,7 @@ export default class galleryClass
 
 			wrapper.style.setProperty('--width-list', `${width}px`);
 		}
-	};
+	}
 
 	/**
 	 * Constructs reverse search URLs
@@ -735,7 +731,7 @@ export default class galleryClass
 		});
 
 		return reverseObj;
-	};
+	}
 
 	/**
 	 * Adds image reverse search options
@@ -771,7 +767,7 @@ export default class galleryClass
 		this.container.querySelector(
 			':scope > div.galleryContent > div.media > div.wrapper > div.cover'
 		).append(container);
-	};
+	}
 
 	/**
 	 * Apply functions
@@ -874,7 +870,7 @@ export default class galleryClass
 
 			return true;
 		}
-	};
+	}
 
 	/* Checks if a list item is scrolled into view */
 	private isScrolledIntoView = (container: HTMLElement, element: HTMLElement): boolean =>
@@ -893,7 +889,7 @@ export default class galleryClass
 
 		return child.offset >= parent.scrolled &&
 			(child.offset + child.height) <= (parent.scrolled + parent.height);
-	};
+	}
 
 	/**
 	 * Calculates the navigational index
@@ -918,7 +914,7 @@ export default class galleryClass
 		}
 
 		return adjusted;
-	};
+	}
 
 	/**
 	 * Video functions
@@ -999,7 +995,7 @@ export default class galleryClass
 				return false;
 			}
 		}
-	};
+	}
 
 	/**
 	 * Shows an item (called on show, navigate etc.)
@@ -1230,6 +1226,7 @@ export default class galleryClass
 				eventHooks.listen(video, videoReadyEvents, 'awaitGalleryVideo', (): boolean | void =>
 				{
 					/** Clear listener */
+
 					//eventHooks.unlisten(video, videoReadyEvents, 'awaitGalleryVideo');
 
 					if(hasEvented || video.srcId !== this.data.selected.src)
@@ -1317,7 +1314,7 @@ export default class galleryClass
 		};
 
 		display();
-	};
+	}
 
 	/**
 	 * Navigates the gallery
@@ -1403,7 +1400,7 @@ export default class galleryClass
 		/* Trigger gallery item change event */
 		eventHooks.trigger('galleryItemChanged', {
 			source: encodedItemSource,
-			index: index
+			index, image, video
 		});
 
 		/* If selected item is an image */
@@ -1434,16 +1431,6 @@ export default class galleryClass
 
 				wrapper.prepend(cover);
 				cover.append(image);
-
-				/* Listener for mouse enter on image cover */
-				cover.addEventListener('mouseenter', (e: Event) =>
-				{
-					if(this.options.reverseOptions)
-					{
-						/* Show reverse options if enabled */
-						this.reverse(e.currentTarget as HTMLElement);
-					}
-				});
 			}
 
 			/* Await image loading */
@@ -1461,12 +1448,17 @@ export default class galleryClass
 								height: h
 							}
 						});
+
+						if(this.options.reverseOptions)
+						{
+							/* Show reverse options if enabled */
+							this.reverse(image as HTMLElement);
+						}
 					}
 				}
 			}).catch((error: unknown) =>
 			{
 				/* Image could not be loaded */
-
 				console.error(error);
 
 				this.busy(false);
@@ -1518,7 +1510,7 @@ export default class galleryClass
 
 			return true;
 		}
-	};
+	}
 
 	/**
 	 * Handles keypresses
@@ -1562,7 +1554,7 @@ export default class galleryClass
 		}
 
 		callback(this.data.keyPrevent.includes(key));
-	};
+	}
 
 	/**
 	 * Prepares a listener to be removed on gallery unbind
@@ -1575,7 +1567,7 @@ export default class galleryClass
 		this.data.boundEvents[id] = {
 			selector, events
 		};
-	};
+	}
 
 	/**
 	 * Unbinds gallery listeners (called on gallery hide)
@@ -1595,7 +1587,7 @@ export default class galleryClass
 		this.data.boundEvents = {};
 
 		eventHooks.trigger('galleryUnbound');
-	};
+	}
 
 	/**
 	 * Scrollbreak
@@ -1603,7 +1595,7 @@ export default class galleryClass
 	private scrollBreak = (): void =>
 	{
 		this.data.scrollbreak = false;
-	};
+	}
 
 	/**
 	 * Toggles the visibility of the list of items
@@ -1639,7 +1631,7 @@ export default class galleryClass
 		}
 
 		return !visible;
-	};
+	}
 
 	/**
 	 * Binds listeners (called on create, show etc.)
@@ -1831,37 +1823,48 @@ export default class galleryClass
 			onAdd: this.removeOnUnbind
 		});
 
+		/* Used to create a scroll break to avoid accidental multi-swipes */
+		let swipeTimeout: null | number = null;
+		let swipeBreak = false;
+
 		if(this.options.mobile === true)
 		{
+			const swipeTarget = document.querySelector('body > div.rootGallery div.wrapper');
+
 			/* Handle swipe events */
-			const handler = (event: Event, eventData: EventData): void =>
+			swipeTarget.addEventListener('swiped', (e: SwipeEvent) =>
 			{
-				switch(eventData.directionX)
+				clearTimeout(swipeTimeout);
+
+				if(!swipeBreak)
 				{
-					case 'RIGHT':
+					if(e.detail.dir === 'down' || e.detail.dir === 'right')
+					{
+						/** Navigate forwards */
 						this.navigate(null, -1);
-						break;
 
-					case 'LEFT':
+						swipeBreak = true;
+					} else if(e.detail.dir === 'up' || e.detail.dir === 'left')
+					{
+						/** Navigate backwards */
 						this.navigate(null, 1);
-						break;
+
+						swipeBreak = true;
+					}
 				}
-			};
-
-			/* Create swipe events */
-			const swipeInstance = new Swipe({
-				element: document.querySelector('body > div.rootGallery'),
-				onSwiped: handler,
-				mouseTrackingEnabled: true
+				
+				/** Effectively locks swiping for 200 ms */
+				swipeTimeout = window.setTimeout(() =>
+				{
+					swipeBreak = false;
+				}, 200);
 			});
-
-			/* Initialize */
-			swipeInstance.init();
 		}
 
 		/* Scroll navigation listener */
-		eventHooks.listen('body > div.rootGallery  > div.galleryContent > \
-			div.media', ['scroll', 'DOMMouseScroll', 'mousewheel'], 'galleryScrollNavigate', 
+		eventHooks.listen(
+			'body > div.rootGallery  > div.galleryContent > div.media',
+			['scroll', 'DOMMouseScroll', 'mousewheel'], 'galleryScrollNavigate', 
 		(event: WheelEvent): void | boolean =>
 		{
 			if(this.options.scrollInterval > 0 && this.data.scrollbreak === true)
@@ -1915,7 +1918,7 @@ export default class galleryClass
 		eventHooks.trigger('galleryBound', true);
 
 		return this.container;
-	};
+	}
 
 	/* Construct gallery top bar items */
 	private barConstruct = (bar: HTMLElement): HTMLElement =>
@@ -1963,7 +1966,7 @@ export default class galleryClass
 		}));
 
 		return bar;
-	};
+	}
 
 	/**
 	 * Creates the gallery elements, populates the table etc.
@@ -2116,5 +2119,5 @@ export default class galleryClass
 		this.populateTable(this.items);
 
 		callback(true);
-	};
+	}
 }
