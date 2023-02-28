@@ -27,6 +27,7 @@ export type TOptions = {
 		enabled?: boolean;
 		hidden?: boolean;
 		toggled?: boolean;
+		meta?: boolean;
 	};
 	media?: {
 		extensions?: {

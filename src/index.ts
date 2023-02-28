@@ -127,23 +127,33 @@ const handle = async (
 
 			/** Collect and read `README.md` file */
 			let readmeContent = null;
+      let readmeText = null;
+      let readmePreview = null;
 
-			if(config.server.readme.enabled)
-			{
-				/** Check for a `README.md` file */
-				const readme = await data.contents.files.find(file => file.name === 'README.md');
-
-				if(readme)
-				{
-					/** Read `README.md` file */
-					await fsp.readFile(path.join(directory, readme.relative), 'utf8').then(fileBuffer => {
-						readmeContent = converter.makeHtml(fileBuffer.toString());
-					});
-
-					/** Set hidden state if enabled */
-					readme.hidden = config.server.readme.hidden ? true: false;
-				}
-			}
+			if (config.server.readme.enabled) {
+        /** Check for a `README.md` file */
+        const readme = await data.contents.files.find(
+          (file) => file.name === "README.md"
+        );
+    
+        if (readme) {
+          /** Read `README.md` file */
+          await fsp
+            .readFile(path.join(directory, readme.relative), "utf8")
+            .then((fileBuffer) => {
+              readmeText = fileBuffer.toString();
+              readmeContent = converter.makeHtml(fileBuffer.toString());
+            });
+    
+          if (config.server.readme.meta == true) {
+            readmePreview = readmeText.replaceAll(/<\/?[^>]+(>|$)/gi, "").replace(/\s+/g, ' ').trim();
+            console.log(readmePreview)
+          }
+    
+          /** Set hidden state if enabled */
+          readme.hidden = config.server.readme.hidden ? true : false;
+        }
+      }
 
 			/** Check for `.indexignore` file */
 			const ignore = await data.contents.files.find(file => file.name === '.indexignore');
@@ -231,6 +241,7 @@ const handle = async (
 				path: clickablePath(relative),
 				readme: {
 					content: readmeContent,
+          preview: readmePreview,
 					toggled: !clientConfig.readme.toggled
 				},
 				req: relative,

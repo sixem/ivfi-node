@@ -8,6 +8,11 @@ head
     content='width=device-width, initial-scale=1'
   )
   title Index of #{req}
+  if readme.preview
+    meta(
+      name='description'
+      content=readme.preview
+    )
   link(
     rel='shortcut icon'
     type=(config.icon.mime || 'image/png')

@@ -50,7 +50,8 @@ const data: TOptions = {
 	readme: {
 		enabled: true,
 		hidden: false,
-		toggled: true
+		toggled: true,
+		meta: true
 	},
 	media: {
 		extensions: {
