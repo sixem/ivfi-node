@@ -46,6 +46,22 @@ Options {
 - type: `{object}`
 default: `null`
 
+---
+
+### *authentication → restrict*
+An array (or a string for a single route) containg a set of routes that the authentication should apply to.
+
+Leaving this unset or falsish will apply the authentication globally, as is default.
+```js
+Options {
+    authentication: {
+        restrict: ['/route_one/', '/route_two/*']
+    }
+}
+```
+- type: `<array> | 'string'`
+default: `null`
+
 <br/><br/>
 
 # Format
