@@ -87,6 +87,13 @@ const handle = async (
 		/** Request is a directory, collect data and render */
 		if(validated && stat.isDirectory())
 		{
+			/** Redirect to trailing slash */
+			if(req.path[req.path.length - 1] !== '/')
+			{
+				res.redirect(301, req.url + '/');
+				return;
+			}
+			
 			if(options.get('debug'))
 			{
 				logger('debug', chalk.yellow(`Navigating: ${chalk.green(`'${relative}'`)} ...`));
