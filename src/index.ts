@@ -366,20 +366,20 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 		run: async (
 			port = 80 /** Port to expose the web server on */,
 			directory = workingDirectory /** Root working directory */,
-			opts: TOptions = {}) =>
+			_options: TOptions = {}) =>
 		{
 			/** Store/set port and directory */
 			module.port = port;
 			module.directory = path.resolve(directory).replace(/\\/g, '/');
 
 			/** Merge set config with defaults */
-			options.set(opts);
+			options.set(_options);
 
 			if(options.get('debug'))
 			{
 				/** Print some debugging information */
 				logger('debug', chalk.yellow('Debugging is enabled.'));
-				logger('debug', chalk.yellow(`Using options: ${chalk.gray(JSON.stringify(opts))}`));
+				logger('debug', chalk.yellow(`Using options: ${chalk.gray(JSON.stringify(_options))}`));
 				logger('debug', chalk.yellow(`Root directory is set to: ${chalk.green(`'${directory}'`)}`));
 			}
 
@@ -401,24 +401,45 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 			}
 
 			/** Set authentication */
-			if(_.has(opts, 'authentication.users') && opts.authentication.users)
+			if(_.has(_options, 'authentication.users') && _options.authentication.users)
 			{
-				app.use(basicAuth({
-					users: opts.authentication.users,
-					challenge: true
-				}));
+				if(_.has(_options, 'authentication.restrict') && _options.authentication.restrict)
+				{
+					const restrict = Array.isArray(_options.authentication.restrict)
+						? _options.authentication.restrict
+						: [_options.authentication.restrict].filter((route) => _.isString(route));
+
+					logger('debug', chalk.yellow('Applying authentication to restricted routes:'), chalk.gray(restrict.join(', ')));
+
+					/** Apply authentication to restricted routes */
+					for(const route of restrict)
+					{
+						app.get(route, basicAuth({
+							users: _options.authentication.users,
+							challenge: true
+						}));
+					}
+				} else {
+					logger('debug', chalk.yellow('Applying global authentication'));
+
+					/** Apply global authentication */
+					app.use(basicAuth({
+						users: _options.authentication.users,
+						challenge: true
+					}));
+				}
 			}
 
 			/** Set public directory */
 			app.use(express.static(`${workingDirectory}/dist/`));
 
 			/** Load themes */
-			if(_.has(opts, 'style.themes.path') && _.isObject(opts.style.themes))
+			if(_.has(_options, 'style.themes.path') && _.isObject(_options.style.themes))
 			{
-				const location: string = opts.style.themes.path;
+				const location: string = _options.style.themes.path;
 
 				/** Get available themes */
-				const pool = await loadThemes(opts.style.themes.path);
+				const pool = await loadThemes(_options.style.themes.path);
 
 				if(pool)
 				{
@@ -431,9 +452,9 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 						path: '/themes/',
 						pool: pool,
 						/** Get default theme if set, also check if it exists in pool */
-						set: _.has(opts, 'style.themes.default')
-							? (pool[opts.style.themes.default.toLowerCase()]
-								? opts.style.themes.default.toLowerCase()
+						set: _.has(_options, 'style.themes.default')
+							? (pool[_options.style.themes.default.toLowerCase()]
+								? _options.style.themes.default.toLowerCase()
 								: null)
 							: null
 					});
@@ -453,7 +474,7 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 			});
 
 			/** Set http or https (if options.ssl is set) server */
-			module.server = (_.has(opts, 'ssl') && _.isObject(opts.ssl) ? https.createServer(opts.ssl, app) : app);
+			module.server = (_.has(_options, 'ssl') && _.isObject(_options.ssl) ? https.createServer(_options.ssl, app) : app);
 
 			/** Create client config template */
 			config.clientTemplate = configCreate(config.server, options.get());
@@ -461,7 +482,7 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 			/** Bind to port and listen for requests */
 			module.server = await module.server.listen(module.port, async () =>
 			{
-				const listenUrl = `http${_.has(opts, 'ssl') ? 's' : ''}://localhost:${module.port}`;
+				const listenUrl = `http${_.has(_options, 'ssl') ? 's' : ''}://localhost:${module.port}`;
 				logger('info', `Listening on ${chalk.green(listenUrl)} ...`);
 			});
 

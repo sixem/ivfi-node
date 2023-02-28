@@ -49,7 +49,8 @@ export type TOptions = {
 	authentication?: {
 		users: {
 			[key: string]: string;
-		} | false
+		} | false,
+		restrict?: string | Array<string>
 	};
 	ssl?: boolean | {
 		key: string;
