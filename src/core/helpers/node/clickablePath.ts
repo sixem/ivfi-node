@@ -16,7 +16,7 @@ export const clickablePath = (p: string) =>
 		if(part.length > 0)
 		{
 			/** Create anchor href */
-			let href = parts.slice(0, index + 1).join('/') + '/';
+			const href = parts.slice(0, index + 1).join('/') + '/';
 
 			built = (built + `<a href="/${href}">${((index + 1) !== 1 ? '/': '')}${
 				/** Adds a trailing slash to the last index */
