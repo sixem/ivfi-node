@@ -1,5 +1,3 @@
-import _ from 'lodash';
-
 import {
 	trimBoth
 } from '../index';
@@ -7,7 +5,7 @@ import {
 /**
  * Creates a clickable path (using anchors) from a path string
  */
-export const clickablePath = (p) =>
+export const clickablePath = (p: string) =>
 {
 	const parts = trimBoth(p, '/').split('/');
 	
@@ -15,9 +13,15 @@ export const clickablePath = (p) =>
 
 	parts.forEach((part, index) =>
 	{
-		if(!_.isEmpty(part))
+		if(part.length > 0)
 		{
-			built = (built + `<a href="/${parts.slice(0, index + 1).join('/')}">${((index + 1) !== 1 ? '/': '')}${part}</a>`);
+			/** Create anchor href */
+			let href = parts.slice(0, index + 1).join('/') + '/';
+
+			built = (built + `<a href="/${href}">${((index + 1) !== 1 ? '/': '')}${
+				/** Adds a trailing slash to the last index */
+				part + (index === (parts.length - 1) ? '/' : '')
+			}</a>`);
 		}
 	});
 
