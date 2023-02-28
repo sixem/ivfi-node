@@ -45,6 +45,7 @@ export type TOptions = {
 	icon?: {
 		path?: string | null;
 		mime?: string | null;
+		file?: string | null;
 	};
 	authentication?: {
 		users: {

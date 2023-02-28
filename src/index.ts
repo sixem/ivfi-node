@@ -5,6 +5,8 @@ import cookies from 'cookie-parser';
 import compression from 'compression';
 import showdown from 'showdown';
 import path from 'path';
+import fs from 'fs';
+import mime from 'mime-types';
 import basicAuth from 'express-basic-auth';
 import https from 'https';
 import chalk from 'chalk';
@@ -416,7 +418,10 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 						? _options.authentication.restrict
 						: [_options.authentication.restrict].filter((route) => _.isString(route));
 
-					logger('debug', chalk.yellow('Applying authentication to restricted routes:'), chalk.gray(restrict.join(', ')));
+					if(options.get('debug'))
+					{
+						logger('debug', chalk.yellow('Applying authentication to restricted routes:'), chalk.gray(restrict.join(', ')));
+					}
 
 					/** Apply authentication to restricted routes */
 					for(const route of restrict)
@@ -427,7 +432,10 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 						}));
 					}
 				} else {
-					logger('debug', chalk.yellow('Applying global authentication'));
+					if(options.get('debug'))
+					{
+						logger('debug', chalk.yellow('Applying global authentication.'));
+					}
 
 					/** Apply global authentication */
 					app.use(basicAuth({
@@ -471,6 +479,46 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 				} else {
 					/** No themes were found, disable themes */
 					options.insert('style.themes', false);
+				}
+			}
+
+			/** Handle custom favicon */
+			if(_.has(_options, 'icon.file') && _.isString(_options.icon.file))
+			{
+				const iconPath = path.resolve(_options.icon.file);
+
+				if(fs.existsSync(iconPath))
+				{
+					const iconName = path.basename(iconPath);
+					const iconUri = `/favicon${path.extname(iconName)}`;
+
+					if(options.get('debug'))
+					{
+						logger('debug', chalk.yellow(`Using custom favicon: ${chalk.green(`'${iconName}'`)}`));
+					}
+
+					/** Set MIME type automatically, but don't force it if a custom one already has been set */
+					if(!_.has(_options, 'icon.mime'))
+					{
+						config.server.icon.mime = mime.lookup(iconName) || 'image/png';
+					}
+
+					/** Set favicon path */
+					config.server.icon.path = iconUri;
+
+					app.get(iconUri, (req: Request, res: Response, next: NextFunction) =>
+					{
+						res.sendFile(path.resolve(iconPath), (error) =>
+						{
+							if(error)
+							{
+								res.status(500).end();
+								next();
+							}
+						});
+					});
+				} else {
+					logger('warning', chalk.red(`Custom favicon '${iconPath}' does not exist - continuing without.`));
 				}
 			}
 
