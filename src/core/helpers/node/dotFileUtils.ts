@@ -1,4 +1,5 @@
 import {
+    mergeMetadata,
     wildcardExpression
 } from './index';
 
@@ -74,68 +75,20 @@ export const handleDotFile = (config: TDotFile, data: {
             ? (config.metadataBehavior as string).toLowerCase()
             : 'overwrite';
 
-        /** Store metadata */
-        const mdMerge: {
-            [key: string]: {
-                [key: string]: string;
-            }
-        } = {};
-
         if(behavior === 'overwrite')
         {
-            /** Iterate over and store current metadata */
-            data.metadata.forEach((item) =>
-            {
-                Object.keys(item).forEach((key) =>
-                {
-                    if(key !== 'content')
-                    {
-                        if(!mdMerge[key]) mdMerge[key] = {};
-
-                        mdMerge[key][item[key]] = item.content;
-                    }
-                });
-            });
-
-            /**
-             * Iterate over new, directory-specific metadata
-             * 
-             * This will override any existing values, but still keep any unchanged values
-             */
-            (config.metadata as Array<{ [key: string]: string; }>).forEach((item) =>
-            {
-                Object.keys(item).forEach((key) =>
-                {
-                    if(key !== 'content')
-                    {
-                        if(!mdMerge[key]) mdMerge[key] = {};
-
-                        mdMerge[key][item[key]] = (item as {
-                            [key: string]: string;
-                        }).content || null;
-                    }
-                });
-            });
-
-            /** Set new metadata */
-            data.setMetadata(Object.keys(mdMerge).map((property) =>
-            {
-                return Object.keys(mdMerge[property]).map((key) =>
-                {
-                    const item = { [property]: key };
-
-                    if(mdMerge[property][key])
-                    {
-                        item.content = mdMerge[property][key];
-                    }
-
-                    return item;
-                });
-            }).flatMap((item) => item) as TMetaData);
+            /** Set new metadata by merging */
+            data.setMetadata(
+                mergeMetadata(
+                    data.metadata as TMetaData, config.metadata as TMetaData
+                )
+            );
         } else if(behavior === 'replace')
         {
-            /** Set new metadata */
-            data.setMetadata(config.metadata as TMetaData);
+            /** Set new metadata by replacement */
+            data.setMetadata(
+                config.metadata as TMetaData
+            );
         }
     }
 };

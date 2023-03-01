@@ -46,7 +46,8 @@ import {
 	loadThemes,
 	cookieRead,
 	debug,
-	logger
+	logger,
+	mergeMetadata
 } from './core/helpers/node/';
 
 /** Markdown converter */
@@ -101,8 +102,17 @@ const handle = async (
 			debug(chalk.yellow(`Navigating: ${chalk.green(`'${relative}'`)} ...`));
 
 			/** Overridable data passed to the renderer */
-			let readmeContent = null;
-			let metadata = config.server.metadata || null;
+			let readmeContent: null | string = null;
+			let metadata: TMetaData = [
+				{ charset: 'utf-8' },
+				{ name: 'viewport', content: 'width=device-width, initial-scale=1' }
+			];
+			
+			/** Merge any passed metadata with the default metadata */
+			if(Array.isArray(config.server.metadata))
+			{
+				mergeMetadata(metadata, config.server.metadata);
+			}
 
 			/** Read client cookie, returns {} when unexisting */
 			const client = cookieRead(req);
@@ -164,10 +174,7 @@ const handle = async (
 							directories: data.contents.directories,
 							files: data.contents.files,
 							metadata: metadata,
-							setMetadata: (data: TMetaData) =>
-							{
-								metadata = data;
-							}
+							setMetadata: (data: TMetaData) => metadata = data
 						});
 					} catch(e) {
 						debug(chalk.red(`Error reading '.ivfi' file: ${e.message} - ignoring file.`));
