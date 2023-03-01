@@ -53,6 +53,9 @@ export type TOptions = {
 		} | false,
 		restrict?: string | Array<string>
 	};
+	metadata?: Array<{
+		[key: string]: string
+	}>,
 	ssl?: boolean | {
 		key: string;
 		cert: string;

@@ -44,6 +44,7 @@ import {
 	sortByKey,
 	loadThemes,
 	cookieRead,
+	debug,
 	logger
 } from './core/helpers/node/';
 
@@ -96,10 +97,7 @@ const handle = async (
 				return;
 			}
 			
-			if(options.get('debug'))
-			{
-				logger('debug', chalk.yellow(`Navigating: ${chalk.green(`'${relative}'`)} ...`));
-			}
+			debug(chalk.yellow(`Navigating: ${chalk.green(`'${relative}'`)} ...`));
 
 			/** Read client cookie, returns {} when unexisting */
 			const client = cookieRead(req);
@@ -247,6 +245,7 @@ const handle = async (
 					},
 					newest: data.stats.newest
 				},
+				metadata: config.server.metadata || null,
 				rendered: getExecutionTime(process.hrtime(executed))
 			};
 
@@ -273,23 +272,14 @@ const handle = async (
 
 			if(!sent)
 			{
-				if(options.get('debug'))
-				{
-					logger('debug', chalk.yellow(`Serving: ${chalk.cyan(`'${relative}'`)} ...`));
-				}
+				debug(chalk.yellow(`Serving: ${chalk.cyan(`'${relative}'`)} ...`));
 
 				/** Request is a valid file, attempt to display it */
 				res.sendFile(requested, (error) =>
 				{
 					if(error)
 					{
-						if(options.get('debug'))
-						{
-							logger('debug', chalk.red(
-								`Encountered an error when serving file ${chalk.cyan(`'${requested}'`)}: ${error}`
-							));
-						}
-
+						debug(chalk.red(`Encountered an error when serving file ${chalk.cyan(`'${requested}'`)}: ${error}`));
 						res.status(500).end();
 						next();
 					}
@@ -384,13 +374,10 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 			/** Merge set config with defaults */
 			options.set(_options);
 
-			if(options.get('debug'))
-			{
-				/** Print some debugging information */
-				logger('debug', chalk.yellow('Debugging is enabled.'));
-				logger('debug', chalk.yellow(`Using options: ${chalk.gray(JSON.stringify(_options))}`));
-				logger('debug', chalk.yellow(`Root directory is set to: ${chalk.green(`'${directory}'`)}`));
-			}
+			/** Print some debugging information */
+			debug(chalk.yellow('Debugging is enabled.'));
+			debug(chalk.yellow(`Using options: ${chalk.gray(JSON.stringify(_options))}`));
+			debug(chalk.yellow(`Root directory is set to: ${chalk.green(`'${directory}'`)}`));
 
 			try
 			{
@@ -418,10 +405,7 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 						? _options.authentication.restrict
 						: [_options.authentication.restrict].filter((route) => _.isString(route));
 
-					if(options.get('debug'))
-					{
-						logger('debug', chalk.yellow('Applying authentication to restricted routes:'), chalk.gray(restrict.join(', ')));
-					}
+						debug(chalk.yellow('Applying authentication to restricted routes:'), chalk.gray(restrict.join(', ')));
 
 					/** Apply authentication to restricted routes */
 					for(const route of restrict)
@@ -432,10 +416,7 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 						}));
 					}
 				} else {
-					if(options.get('debug'))
-					{
-						logger('debug', chalk.yellow('Applying global authentication.'));
-					}
+					debug(chalk.yellow('Applying global authentication.'));
 
 					/** Apply global authentication */
 					app.use(basicAuth({
@@ -458,10 +439,7 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 
 				if(pool)
 				{
-					if(options.get('debug'))
-					{
-						logger('debug', chalk.yellow(`Loaded ${Object.keys(pool).length} theme(s)`));
-					}
+					debug(chalk.yellow(`Loaded ${Object.keys(pool).length} theme(s)`));
 
 					options.insert('style.themes', {
 						path: '/themes/',
@@ -482,6 +460,14 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 				}
 			}
 
+			/** Set metadata */
+			if(_.has(_options, 'metadata') && Array.isArray(config.server.metadata))
+			{
+				config.server.metadata = _options.metadata.filter((item) => _.isObject(item));
+			} else {
+				config.server.metadata = null;
+			}
+
 			/** Handle custom favicon */
 			if(_.has(_options, 'icon.file') && _.isString(_options.icon.file))
 			{
@@ -492,10 +478,7 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 					const iconName = path.basename(iconPath);
 					const iconUri = `/favicon${path.extname(iconName)}`;
 
-					if(options.get('debug'))
-					{
-						logger('debug', chalk.yellow(`Using custom favicon: ${chalk.green(`'${iconName}'`)}`));
-					}
+					debug(chalk.yellow(`Using custom favicon: ${chalk.green(`'${iconName}'`)}`));
 
 					/** Set MIME type automatically, but don't force it if a custom one already has been set */
 					if(!_.has(_options, 'icon.mime'))

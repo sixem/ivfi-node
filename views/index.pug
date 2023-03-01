@@ -7,6 +7,9 @@ head
     name='viewport'
     content='width=device-width, initial-scale=1'
   )
+  if (metadata)
+    each item in metadata
+      meta()&attributes(item)
   title Index of #{req}
   link(
     rel='shortcut icon'
