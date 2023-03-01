@@ -4,6 +4,7 @@
 export * from './common';
 export * from './dirUtils';
 export * from './configUtils';
+export * from './dotFileUtils';
 export * from './mergeExisting';
 export * from './clickablePath';
 export * from './sortByKey';

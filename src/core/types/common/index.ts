@@ -50,6 +50,39 @@ export type TExtensionArray = {
 };
 
 /**
+ * File object passed to the renderer
+ */
+export type TFileContent = {
+	media: boolean;
+	type: string;
+	hidden: boolean;
+	relative: string;
+	name: string;
+	size: {
+		raw: number;
+		readable?: string;
+	};
+	modified: {
+		raw: number;
+		formatted: Array<string>;
+	};
+};
+
+/** Metadata array */
+export type TMetaData = Array<{
+	[key: string]: string;
+}>;
+
+/**
+ * Dotfile configuration (.ivfi files)
+ */
+export type TDotFile = {
+	[key: string]: Array<string
+			| { [key: string]: string; }>
+		| string;
+};
+
+/**
  * `galleryItemChanged` event data
  */
 export type TPayloadgalleryItemChanged = {
@@ -64,11 +97,11 @@ export type TPayloadgalleryItemChanged = {
  */
 export interface IWindowGlobals extends Window {
 	eventHooks?: EventTargetEventHooks['eventHooks'];
-}
+};
 
 /**
  * Global `document` extensions
  */
 export interface IDocumentGlobals extends Document {
 	eventHooks?: EventTargetEventHooks['eventHooks'];
-}
+};

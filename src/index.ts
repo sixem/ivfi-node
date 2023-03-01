@@ -21,7 +21,8 @@ import { options } from './options';
 /** Types */
 import {
 	TPageConfig,
-	TOptions
+	TOptions,
+	TMetaData
 } from './core/types/';
 
 /** Helpers */
@@ -36,7 +37,7 @@ import {
 import {
 	dirCollect,
 	isAbovePath,
-	wildcardExpression,
+	handleDotFile,
 	configAdjust,
 	configCreate,
 	clickablePath,
@@ -99,6 +100,10 @@ const handle = async (
 			
 			debug(chalk.yellow(`Navigating: ${chalk.green(`'${relative}'`)} ...`));
 
+			/** Overridable data passed to the renderer */
+			let readmeContent = null;
+			let metadata = config.server.metadata || null;
+
 			/** Read client cookie, returns {} when unexisting */
 			const client = cookieRead(req);
 
@@ -125,77 +130,49 @@ const handle = async (
 				? (data.contents.files.length >= clientConfig.performance)
 				: false;
 
-			/** Collect and read `README.md` file */
-			let readmeContent = null;
-
+			/** Handle any potential `README.md` files */
 			if(config.server.readme.enabled)
 			{
 				/** Check for a `README.md` file */
-				const readme = await data.contents.files.find(file => file.name === 'README.md');
+				const readmeFile = data.contents.files.find((file) => file.name === 'README.md');
 
-				if(readme)
+				if(readmeFile)
 				{
 					/** Read `README.md` file */
-					await fsp.readFile(path.join(directory, readme.relative), 'utf8').then(fileBuffer => {
+					await fsp.readFile(path.join(directory, readmeFile.relative), 'utf8').then((fileBuffer) =>
+					{
 						readmeContent = converter.makeHtml(fileBuffer.toString());
 					});
 
 					/** Set hidden state if enabled */
-					readme.hidden = config.server.readme.hidden ? true: false;
+					readmeFile.hidden = config.server.readme.hidden ? true: false;
 				}
 			}
 
-			/** Check for `.indexignore` file */
-			const ignore = await data.contents.files.find(file => file.name === '.indexignore');
+			/** Check for dotfile (`.ivfi` file) */
+			const dotFile = data.contents.files.find((file) => file.name === '.ivfi');
 
-			/** If `.indexignore` is present */
-			if(ignore)
+			if(dotFile)
 			{
-				/** Store file objects and keys */
-				const fileObject = {};
+				dotFile.hidden = true;
 
-				/** Get all files and directories */
-				(data.contents.files).forEach((file) => fileObject[file.name] = file);
-				(data.contents.directories).forEach((file) => fileObject[file.name + '/'] = file);
-				
-				/** Read `.indexignore` file */
-				await fsp.readFile(path.join(directory, ignore.relative), 'utf8').then(fileBuffer =>
+				await fsp.readFile(path.join(directory, dotFile.relative), 'utf8').then((fileBuffer) =>
 				{
-					/** Split `.indexignore` by new line */
-					const ignoredFiles = fileBuffer.toString().split(/\r?\n/);
-
-					/** Iterate over `.indexignore` entries */
-					for(let i = 0; i < ignoredFiles.length; i++)
-					{
-						const input = ignoredFiles[i];
-
-						/** Break on empty input */
-						if(!input || input.length === 0)
-						{
-							break;
-						}
-
-						if(Object.prototype.hasOwnProperty.call(fileObject, input))
-						{
-							fileObject[input].hidden = true;
-						} else if(input.includes('*'))
-						{
-							/** Escape input and create new regular expression */
-							const regex = wildcardExpression(input);
-
-							/** Check file/directory names, match against expression - hide on match */
-							Object.keys(fileObject).forEach((key) =>
+					try {
+						/** Attempt to parse and handle dotfile */
+						handleDotFile(JSON.parse(fileBuffer.toString()), {
+							directories: data.contents.directories,
+							files: data.contents.files,
+							metadata: metadata,
+							setMetadata: (data: TMetaData) =>
 							{
-								if(regex.test(key))
-								{
-									fileObject[key].hidden = true;
-								}
-							});
-						}
+								metadata = data;
+							}
+						});
+					} catch(e) {
+						debug(chalk.red(`Error reading '.ivfi' file: ${e.message} - ignoring file.`));
 					}
 				});
-
-				ignore.hidden = true;
 			}
 
 			/** Collected data has some value stored in a `raw` key that we need to access */
@@ -245,7 +222,7 @@ const handle = async (
 					},
 					newest: data.stats.newest
 				},
-				metadata: config.server.metadata || null,
+				metadata: metadata,
 				rendered: getExecutionTime(process.hrtime(executed))
 			};
 
@@ -280,7 +257,7 @@ const handle = async (
 					if(error)
 					{
 						debug(chalk.red(`Encountered an error when serving file ${chalk.cyan(`'${requested}'`)}: ${error}`));
-						res.status(500).end();
+						res.status(404).render('errors/404');
 						next();
 					}
 				});
