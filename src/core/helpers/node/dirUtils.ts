@@ -4,6 +4,10 @@ import { promises as fsp } from 'fs';
 import { options } from '../../../options';
 
 import {
+	TFileContent
+} from '../../types';
+
+import {
 	getReadableSize,
 	calculateOffset,
 	gmdate
@@ -25,8 +29,8 @@ type TFile = {
 
 type TCollected = {
 	contents: {
-		files: any[];
-		directories: any[];
+		files: Array<TFileContent>;
+		directories: Array<TFileContent>;
 	};
 	stats: {
 		total: {
@@ -48,7 +52,7 @@ const dirScan = async (path: string, _options: TOptions = {}): Promise<TFile[]> 
 	})).forEach((dirEnt =>
 	{
 		if(!((['.', '$'].includes(dirEnt.name[0]) || dirEnt.name.includes('#'))
-			&& dirEnt.name !== '.indexignore'))
+			&& dirEnt.name !== '.ivfi'))
 		{
 			files.push({
 				basename: dirEnt.name,
@@ -83,7 +87,7 @@ const dirCollect = async (
 	} = {}
 ): Promise<TCollected> =>
 {
-	const data = {
+	const data: TCollected = {
 		contents: {
 			files: [],
 			directories: []
@@ -113,7 +117,7 @@ const dirCollect = async (
 
 			files.push({
 				basename: file.basename,
-				extension: file.extension,
+				extension: file.extension.toLowerCase(),
 				directory: !stats.isFile() ? true : false,
 				stats: stats
 			});
@@ -181,7 +185,8 @@ const dirCollect = async (
 			hidden: false,
 			relative: path.join(pathInfo.relative, (file.basename)).replace(/\\/g, '/'),
 			name: file.basename,
-			size,
+			extension: (!file.directory ? file.extension : null) || null,
+			size: size,
 			modified: {
 				raw: modified,
 				formatted

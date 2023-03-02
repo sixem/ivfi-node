@@ -21,7 +21,8 @@ import { options } from './options';
 /** Types */
 import {
 	TPageConfig,
-	TOptions
+	TOptions,
+	TMetaData
 } from './core/types/';
 
 /** Helpers */
@@ -29,14 +30,15 @@ import {
 	getReadableSize,
 	calculateOffset,
 	trimRight,
-	addLeading
+	addLeading,
+	addTrailing
 } from './core/helpers/';
 
 /** Helpers */
 import {
 	dirCollect,
 	isAbovePath,
-	wildcardExpression,
+	handleDotFile,
 	configAdjust,
 	configCreate,
 	clickablePath,
@@ -45,7 +47,8 @@ import {
 	loadThemes,
 	cookieRead,
 	debug,
-	logger
+	logger,
+	mergeMetadata
 } from './core/helpers/node/';
 
 /** Markdown converter */
@@ -99,6 +102,19 @@ const handle = async (
 			
 			debug(chalk.yellow(`Navigating: ${chalk.green(`'${relative}'`)} ...`));
 
+			/** Overridable variables passed to the renderer */
+			let readmeContent: null | string = null,
+				metadata: TMetaData = [
+				{ charset: 'utf-8' },
+				{ name: 'viewport', content: 'width=device-width, initial-scale=1' }
+			];
+
+			/** Merge any passed metadata with the default metadata */
+			if(Array.isArray(config.server.metadata))
+			{
+				metadata = mergeMetadata(metadata, config.server.metadata);
+			}
+
 			/** Read client cookie, returns {} when unexisting */
 			const client = cookieRead(req);
 
@@ -118,84 +134,52 @@ const handle = async (
 				}
 			});
 
+			/** Deconstruct contents */
+			const { contents } = data;
+
 			/** Set performance mode */
 			clientConfig.performance = (clientConfig.performance !== false
 					&& clientConfig.performance !== 0
 					&& clientConfig.performance !== null)
-				? (data.contents.files.length >= clientConfig.performance)
+				? (contents.files.length >= clientConfig.performance)
 				: false;
 
-			/** Collect and read `README.md` file */
-			let readmeContent = null;
-
+			/** Handle any potential `README.md` files */
 			if(config.server.readme.enabled)
 			{
 				/** Check for a `README.md` file */
-				const readme = await data.contents.files.find(file => file.name === 'README.md');
+				const readmeFile = contents.files.find((file) => file.name === 'README.md');
 
-				if(readme)
+				if(readmeFile)
 				{
 					/** Read `README.md` file */
-					await fsp.readFile(path.join(directory, readme.relative), 'utf8').then(fileBuffer => {
-						readmeContent = converter.makeHtml(fileBuffer.toString());
-					});
+					const fileBuffer = await fsp.readFile(path.join(directory, readmeFile.relative), 'utf8');
+					readmeContent = converter.makeHtml(fileBuffer.toString());
 
 					/** Set hidden state if enabled */
-					readme.hidden = config.server.readme.hidden ? true: false;
+					readmeFile.hidden = config.server.readme.hidden ? true: false;
 				}
 			}
 
-			/** Check for `.indexignore` file */
-			const ignore = await data.contents.files.find(file => file.name === '.indexignore');
+			/** Check for dotfile (`.ivfi` file) */
+			const dotFile = contents.files.find((file) => file.name === '.ivfi');
 
-			/** If `.indexignore` is present */
-			if(ignore)
+			if(dotFile)
 			{
-				/** Store file objects and keys */
-				const fileObject = {};
+				dotFile.hidden = true;
+				const fileBuffer = await fsp.readFile(path.join(directory, dotFile.relative), 'utf8');
 
-				/** Get all files and directories */
-				(data.contents.files).forEach((file) => fileObject[file.name] = file);
-				(data.contents.directories).forEach((file) => fileObject[file.name + '/'] = file);
-				
-				/** Read `.indexignore` file */
-				await fsp.readFile(path.join(directory, ignore.relative), 'utf8').then(fileBuffer =>
-				{
-					/** Split `.indexignore` by new line */
-					const ignoredFiles = fileBuffer.toString().split(/\r?\n/);
-
-					/** Iterate over `.indexignore` entries */
-					for(let i = 0; i < ignoredFiles.length; i++)
-					{
-						const input = ignoredFiles[i];
-
-						/** Break on empty input */
-						if(!input || input.length === 0)
-						{
-							break;
-						}
-
-						if(Object.prototype.hasOwnProperty.call(fileObject, input))
-						{
-							fileObject[input].hidden = true;
-						} else if(input.includes('*'))
-						{
-							/** Escape input and create new regular expression */
-							const regex = wildcardExpression(input);
-
-							/** Check file/directory names, match against expression - hide on match */
-							Object.keys(fileObject).forEach((key) =>
-							{
-								if(regex.test(key))
-								{
-									fileObject[key].hidden = true;
-								}
-							});
-						}
-					}
-				});
-
-				ignore.hidden = true;
+				try {
+					/** Attempt to parse and handle dotfile */
+					handleDotFile(JSON.parse(fileBuffer.toString()), {
+						directories: contents.directories,
+						files: contents.files,
+						metadata: metadata,
+						setMetadata: (data: TMetaData) => metadata = data
+					});
+				} catch(e) {
+					debug(chalk.red(`Error reading '.ivfi' file: ${e.message} - ignoring file.`));
+				}
 			}
 
 			/** Collected data has some value stored in a `raw` key that we need to access */
@@ -205,7 +189,7 @@ const handle = async (
 			if(clientConfig.sorting.types === 0 || clientConfig.sorting.types === 1)
 			{
 				sortByKey(
-					data.contents.files,
+					contents.files,
 					`${clientConfig.sorting.sortBy}${raw ? '.raw' : ''}`,
 					clientConfig.sorting.order
 				);
@@ -215,29 +199,29 @@ const handle = async (
 			if(clientConfig.sorting.types === 0 || clientConfig.sorting.types === 2)
 			{
 				sortByKey(
-					data.contents.directories,
+					contents.directories,
 					`${clientConfig.sorting.sortBy}${raw ? '.raw' : ''}`,
 					clientConfig.sorting.order
 				);
 			}
 
-			/** Trim the relative path (request uri) */
+			/** Trim the relative path (request URI) */
 			relative = (relative !== '/' ? trimRight(relative, '/').replace(/([^:]\/)\/+/g, '$1'): relative);
 
 			/** Set variables for passing to template */
 			const variables = {
 				config: clientConfig,
-				contents: data.contents,
+				contents: contents,
 				path: clickablePath(relative),
 				readme: {
 					content: readmeContent,
 					toggled: !clientConfig.readme.toggled
 				},
-				req: relative,
+				req: addTrailing(relative, '/'),
 				parent: addLeading(relative.substring(0, relative.lastIndexOf('/')), '/'),
 				count: {
-					files: data.contents.files.length,
-					directories: data.contents.directories.length
+					files: contents.files.length,
+					directories: contents.directories.length
 				},
 				stats: {
 					total: {
@@ -245,7 +229,8 @@ const handle = async (
 					},
 					newest: data.stats.newest
 				},
-				metadata: config.server.metadata || null,
+				dotfile: dotFile || false,
+				metadata: metadata,
 				rendered: getExecutionTime(process.hrtime(executed))
 			};
 
@@ -280,7 +265,7 @@ const handle = async (
 					if(error)
 					{
 						debug(chalk.red(`Encountered an error when serving file ${chalk.cyan(`'${requested}'`)}: ${error}`));
-						res.status(500).end();
+						res.status(404).render('errors/404');
 						next();
 					}
 				});
@@ -468,6 +453,8 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 				config.server.metadata = null;
 			}
 
+			let customIconURI = null;
+
 			/** Handle custom favicon */
 			if(_.has(_options, 'icon.file') && _.isString(_options.icon.file))
 			{
@@ -489,14 +476,15 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 					/** Set favicon path */
 					config.server.icon.path = iconUri;
 
+					customIconURI = iconUri;
+
 					app.get(iconUri, (req: Request, res: Response, next: NextFunction) =>
 					{
 						res.sendFile(path.resolve(iconPath), (error) =>
 						{
 							if(error)
 							{
-								res.status(500).end();
-								next();
+								res.status(404).render('errors/404');
 							}
 						});
 					});
@@ -508,6 +496,11 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 			/** Handle any incoming requests */
 			app.get('(/*)?', (req: Request, res: Response, next: NextFunction) =>
 			{
+				if(customIconURI && req.path === customIconURI)
+				{
+					return;
+				}
+
 				handle(module.directory, req, res, next, process.hrtime());
 			});
 

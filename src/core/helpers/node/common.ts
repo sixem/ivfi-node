@@ -20,7 +20,7 @@ export const asyncForEach = async (array: any[], callback: any) =>
 /**
  * Calculates render time (process.hrtime())
  */
-export const getExecutionTime = (t) =>
+export const getExecutionTime = (t: [number, number]) =>
 {
 	return (t[0] + (t[1] / 1e9)).toFixed(6);
 };
@@ -28,7 +28,7 @@ export const getExecutionTime = (t) =>
 /**
  * Converts a wildcard string into a regular expression
  */
-export const wildcardExpression = (wildcard) =>
+export const wildcardExpression = (wildcard: string) =>
 {
 	/** Escape input and create new regex expression */
 	const escaped = wildcard.replace(/[.+^${}()|[\]\\]/g, '\\$&');
@@ -39,7 +39,7 @@ export const wildcardExpression = (wildcard) =>
 /**
  * Checks if a path is above another path
  */
-export const isAbovePath = (base, path) =>
+export const isAbovePath = (base: string, path: string) =>
 {
 	const b = path.startsWith(base);
 
