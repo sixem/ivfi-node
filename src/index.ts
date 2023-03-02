@@ -101,17 +101,17 @@ const handle = async (
 			
 			debug(chalk.yellow(`Navigating: ${chalk.green(`'${relative}'`)} ...`));
 
-			/** Overridable data passed to the renderer */
-			let readmeContent: null | string = null;
-			let metadata: TMetaData = [
+			/** Overridable variables passed to the renderer */
+			let readmeContent: null | string = null,
+				metadata: TMetaData = [
 				{ charset: 'utf-8' },
 				{ name: 'viewport', content: 'width=device-width, initial-scale=1' }
 			];
-			
+
 			/** Merge any passed metadata with the default metadata */
 			if(Array.isArray(config.server.metadata))
 			{
-				mergeMetadata(metadata, config.server.metadata);
+				metadata = mergeMetadata(metadata, config.server.metadata);
 			}
 
 			/** Read client cookie, returns {} when unexisting */
@@ -133,26 +133,27 @@ const handle = async (
 				}
 			});
 
+			/** Deconstruct contents */
+			const { contents } = data;
+
 			/** Set performance mode */
 			clientConfig.performance = (clientConfig.performance !== false
 					&& clientConfig.performance !== 0
 					&& clientConfig.performance !== null)
-				? (data.contents.files.length >= clientConfig.performance)
+				? (contents.files.length >= clientConfig.performance)
 				: false;
 
 			/** Handle any potential `README.md` files */
 			if(config.server.readme.enabled)
 			{
 				/** Check for a `README.md` file */
-				const readmeFile = data.contents.files.find((file) => file.name === 'README.md');
+				const readmeFile = contents.files.find((file) => file.name === 'README.md');
 
 				if(readmeFile)
 				{
 					/** Read `README.md` file */
-					await fsp.readFile(path.join(directory, readmeFile.relative), 'utf8').then((fileBuffer) =>
-					{
-						readmeContent = converter.makeHtml(fileBuffer.toString());
-					});
+					const fileBuffer = await fsp.readFile(path.join(directory, readmeFile.relative), 'utf8');
+					readmeContent = converter.makeHtml(fileBuffer.toString());
 
 					/** Set hidden state if enabled */
 					readmeFile.hidden = config.server.readme.hidden ? true: false;
@@ -160,26 +161,24 @@ const handle = async (
 			}
 
 			/** Check for dotfile (`.ivfi` file) */
-			const dotFile = data.contents.files.find((file) => file.name === '.ivfi');
+			const dotFile = contents.files.find((file) => file.name === '.ivfi');
 
 			if(dotFile)
 			{
 				dotFile.hidden = true;
+				const fileBuffer = await fsp.readFile(path.join(directory, dotFile.relative), 'utf8');
 
-				await fsp.readFile(path.join(directory, dotFile.relative), 'utf8').then((fileBuffer) =>
-				{
-					try {
-						/** Attempt to parse and handle dotfile */
-						handleDotFile(JSON.parse(fileBuffer.toString()), {
-							directories: data.contents.directories,
-							files: data.contents.files,
-							metadata: metadata,
-							setMetadata: (data: TMetaData) => metadata = data
-						});
-					} catch(e) {
-						debug(chalk.red(`Error reading '.ivfi' file: ${e.message} - ignoring file.`));
-					}
-				});
+				try {
+					/** Attempt to parse and handle dotfile */
+					handleDotFile(JSON.parse(fileBuffer.toString()), {
+						directories: contents.directories,
+						files: contents.files,
+						metadata: metadata,
+						setMetadata: (data: TMetaData) => metadata = data
+					});
+				} catch(e) {
+					debug(chalk.red(`Error reading '.ivfi' file: ${e.message} - ignoring file.`));
+				}
 			}
 
 			/** Collected data has some value stored in a `raw` key that we need to access */
@@ -189,7 +188,7 @@ const handle = async (
 			if(clientConfig.sorting.types === 0 || clientConfig.sorting.types === 1)
 			{
 				sortByKey(
-					data.contents.files,
+					contents.files,
 					`${clientConfig.sorting.sortBy}${raw ? '.raw' : ''}`,
 					clientConfig.sorting.order
 				);
@@ -199,19 +198,19 @@ const handle = async (
 			if(clientConfig.sorting.types === 0 || clientConfig.sorting.types === 2)
 			{
 				sortByKey(
-					data.contents.directories,
+					contents.directories,
 					`${clientConfig.sorting.sortBy}${raw ? '.raw' : ''}`,
 					clientConfig.sorting.order
 				);
 			}
 
-			/** Trim the relative path (request uri) */
+			/** Trim the relative path (request URI) */
 			relative = (relative !== '/' ? trimRight(relative, '/').replace(/([^:]\/)\/+/g, '$1'): relative);
 
 			/** Set variables for passing to template */
 			const variables = {
 				config: clientConfig,
-				contents: data.contents,
+				contents: contents,
 				path: clickablePath(relative),
 				readme: {
 					content: readmeContent,
@@ -220,8 +219,8 @@ const handle = async (
 				req: relative,
 				parent: addLeading(relative.substring(0, relative.lastIndexOf('/')), '/'),
 				count: {
-					files: data.contents.files.length,
-					directories: data.contents.directories.length
+					files: contents.files.length,
+					directories: contents.directories.length
 				},
 				stats: {
 					total: {

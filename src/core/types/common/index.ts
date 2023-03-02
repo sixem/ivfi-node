@@ -70,7 +70,7 @@ export type TFileContent = {
 
 /** Metadata array */
 export type TMetaData = Array<{
-	[key: string]: string;
+	[key: string]: string | boolean;
 }>;
 
 /**
