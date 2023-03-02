@@ -451,6 +451,8 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 				config.server.metadata = null;
 			}
 
+			let customIconURI = null;
+
 			/** Handle custom favicon */
 			if(_.has(_options, 'icon.file') && _.isString(_options.icon.file))
 			{
@@ -472,14 +474,15 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 					/** Set favicon path */
 					config.server.icon.path = iconUri;
 
+					customIconURI = iconUri;
+
 					app.get(iconUri, (req: Request, res: Response, next: NextFunction) =>
 					{
 						res.sendFile(path.resolve(iconPath), (error) =>
 						{
 							if(error)
 							{
-								res.status(500).end();
-								next();
+								res.status(404).render('errors/404');
 							}
 						});
 					});
@@ -491,6 +494,11 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 			/** Handle any incoming requests */
 			app.get('(/*)?', (req: Request, res: Response, next: NextFunction) =>
 			{
+				if(customIconURI && req.path === customIconURI)
+				{
+					return;
+				}
+
 				handle(module.directory, req, res, next, process.hrtime());
 			});
 

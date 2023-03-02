@@ -58,6 +58,7 @@ export type TFileContent = {
 	hidden: boolean;
 	relative: string;
 	name: string;
+	extension: string;
 	size: {
 		raw: number;
 		readable?: string;

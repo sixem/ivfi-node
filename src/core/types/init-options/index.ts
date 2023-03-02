@@ -60,6 +60,6 @@ export type TOptions = {
 		key: string;
 		cert: string;
 	};
-	exclude?: boolean;
+	exclude?: boolean | Array<string>;
 	debug?: boolean;
 };

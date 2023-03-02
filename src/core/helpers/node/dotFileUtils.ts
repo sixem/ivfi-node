@@ -1,3 +1,10 @@
+/** Vendors */
+import chalk from 'chalk';
+
+import {
+    debug
+} from './logger';
+
 import {
     mergeMetadata,
     wildcardExpression
@@ -6,13 +13,13 @@ import {
 import {
     TDotFile,
     TFileContent,
-    TMetaData,
+    TMetaData
 } from '../../types';
 
 const ignoreFiles = (data: {
     files: Array<TFileContent>,
     directories: Array<TFileContent>
-}, filter: Array<string>) =>
+}, itemFilter: Array<string>, excludeExtensions: Array<string> = null) =>
 {
     /** Store file objects and keys */
     const fileObject = {};
@@ -33,11 +40,11 @@ const ignoreFiles = (data: {
 
     /** Store lengths */
     const fileKeysLength = fileKeys.length;
-    const filterLength = filter.length;
+    const filterLength = itemFilter.length;
 
     for(let i = 0; i < filterLength; i++)
     {
-        const ignoreItem = filter[i] as string;
+        const ignoreItem = itemFilter[i] as string;
 
         if(!ignoreItem) continue;
 
@@ -60,6 +67,17 @@ const ignoreFiles = (data: {
             }
         }
     }
+
+    if(excludeExtensions.length > 0)
+    {
+        for(const file of data.files)
+        {
+            if(excludeExtensions.includes(file.extension))
+            {
+                file.hidden = true;
+            }
+        }
+    }
 };
 
 export const handleDotFile = (config: TDotFile, data: {
@@ -71,14 +89,26 @@ export const handleDotFile = (config: TDotFile, data: {
 {
     const { metadata, setMetadata, files, directories } = data;
 
-    /**	Handle ignored files */
-    if(config.ignore
+    /**	Handle ignored or excluded (file extensions) files */
+    if((config.ignore
         && Array.isArray(config.ignore)
         && config.ignore.length > 0)
+        || (config.exclude
+            && Array.isArray(config.exclude)
+            && config.exclude.length > 0))
     {
+        const itemFilter = config.ignore && Array.isArray(config.ignore)
+            ? config.ignore
+            : [];
+
+        const excludeExtensions = config.exclude && Array.isArray(config.exclude)
+            ? (config.exclude).map((item) => (item as string).toLowerCase())
+            : [];
+
         ignoreFiles(
             { files, directories },
-            config.ignore as Array<string>
+            itemFilter as Array<string>,
+            excludeExtensions as Array<string>
         );
     }
 
@@ -102,6 +132,10 @@ export const handleDotFile = (config: TDotFile, data: {
             setMetadata(
                 config.metadata as TMetaData
             );
+        } else {
+            debug(chalk.red(
+                `Invalid ${chalk.yellow('metadataBehavior')} ('${chalk.yellow(behavior)}') - ignoring.`
+            ));
         }
     }
 };

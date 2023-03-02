@@ -117,7 +117,7 @@ const dirCollect = async (
 
 			files.push({
 				basename: file.basename,
-				extension: file.extension,
+				extension: file.extension.toLowerCase(),
 				directory: !stats.isFile() ? true : false,
 				stats: stats
 			});
@@ -185,6 +185,7 @@ const dirCollect = async (
 			hidden: false,
 			relative: path.join(pathInfo.relative, (file.basename)).replace(/\\/g, '/'),
 			name: file.basename,
+			extension: (!file.directory ? file.extension : null) || null,
 			size: size,
 			modified: {
 				raw: modified,
