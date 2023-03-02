@@ -30,7 +30,8 @@ import {
 	getReadableSize,
 	calculateOffset,
 	trimRight,
-	addLeading
+	addLeading,
+	addTrailing
 } from './core/helpers/';
 
 /** Helpers */
@@ -216,7 +217,7 @@ const handle = async (
 					content: readmeContent,
 					toggled: !clientConfig.readme.toggled
 				},
-				req: relative,
+				req: addTrailing(relative, '/'),
 				parent: addLeading(relative.substring(0, relative.lastIndexOf('/')), '/'),
 				count: {
 					files: contents.files.length,
@@ -228,6 +229,7 @@ const handle = async (
 					},
 					newest: data.stats.newest
 				},
+				dotfile: dotFile || false,
 				metadata: metadata,
 				rendered: getExecutionTime(process.hrtime(executed))
 			};
