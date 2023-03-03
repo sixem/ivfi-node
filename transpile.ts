@@ -25,7 +25,7 @@ const compileDirectory = path.join(__dirname, 'packed');
 });
 
 /** Prepare required package files */
-['package.json', '.npmignore', 'README.md', 'icon.svg', 'LICENSE'].forEach((file) =>
+['package.json', '.npmignore', 'README.md', 'logo.svg', 'LICENSE'].forEach((file) =>
 {
     fs.copySync(path.join(__dirname, file), path.join(compileDirectory, file));
 });
