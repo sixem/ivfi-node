@@ -105,9 +105,9 @@ const handle = async (
 			/** Overridable variables passed to the renderer */
 			let readmeContent: null | string = null,
 				metadata: TMetaData = [
-				{ charset: 'utf-8' },
-				{ name: 'viewport', content: 'width=device-width, initial-scale=1' }
-			];
+					{ charset: 'utf-8' },
+					{ name: 'viewport', content: 'width=device-width, initial-scale=1' }
+				];
 
 			/** Merge any passed metadata with the default metadata */
 			if(Array.isArray(config.server.metadata))
@@ -401,7 +401,7 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 						? _options.authentication.restrict
 						: [_options.authentication.restrict].filter((route) => _.isString(route));
 
-						debug(chalk.yellow('Applying authentication to restricted routes:'), chalk.gray(restrict.join(', ')));
+					debug(chalk.yellow('Applying authentication to restricted routes:'), chalk.gray(restrict.join(', ')));
 
 					/** Apply authentication to restricted routes */
 					for(const route of restrict)
@@ -489,7 +489,7 @@ const ivfi = (workingDirectory: string = path.join(__dirname, '..')) =>
 
 					customIconURI = iconUri;
 
-					app.get(iconUri, (req: Request, res: Response, next: NextFunction) =>
+					app.get(iconUri, (req: Request, res: Response) =>
 					{
 						res.sendFile(path.resolve(iconPath), (error) =>
 						{
