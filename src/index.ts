@@ -250,7 +250,9 @@ const handle = async (
 				if(exclude.includes(requested.split('.').pop().toLowerCase()))
 				{
 					/** Extension is excluded, show an error */
-					res.status(404).render('errors/404');
+					res.status(404).render('errors/404', {
+						config: _.pick(config.server, 'icon')
+					});
 					sent = true;
 				}
 			}
@@ -265,13 +267,19 @@ const handle = async (
 					if(error)
 					{
 						debug(chalk.red(`Encountered an error when serving file ${chalk.cyan(`'${requested}'`)}: ${error}`));
-						res.status(404).render('errors/404');
+
+						res.status(404).render('errors/404', {
+							config: _.pick(config.server, 'icon')
+						});
+
 						next();
 					}
 				});
 			}
 		} else {
-			res.status(400).render('errors/400');
+			res.status(400).render('errors/400', {
+				config: _.pick(config.server, 'icon')
+			});
 		}
 	} catch(e)
 	{
@@ -280,11 +288,14 @@ const handle = async (
 		if(e.code === 'ENOENT')
 		{
 			/** Path does not exist on the server side */
-			res.status(404).render('errors/404');
+			res.status(404).render('errors/404', {
+				config: _.pick(config.server, 'icon')
+			});
 
 		} else {
 			/** Any non-ENOENT (404) error */
 			res.status(400).render('errors/400', {
+				config: _.pick(config.server, 'icon'),
 				code: e.code
 			});
 		}

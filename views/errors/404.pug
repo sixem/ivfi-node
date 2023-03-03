@@ -3,7 +3,11 @@ head
   meta(charset='utf-8')
   meta(name='viewport' content='width=device-width, initial-scale=1')
   title 404 - Not found.
-  link(rel='shortcut icon' href='/favicon.png' type='image/png')
+  link(
+    rel='shortcut icon'
+    type=(config.icon.mime || 'image/png')
+    href=(config.icon.path || 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACACAMAAAD04JH5AAAAxlBMVEUAAAAkgc4kc7Ukc7Ykc7Ukc7Ukc7Ukc7UkgtAkgc8lgtAlgtAkdLYlgtAkcrQkgc4kgc8kgs8kgs8kc7QkdLckgtAkc7Ukgs8kgc8kc7Ukgc4keL4keL4kfcgkgs8kfsglgtAkgs8kc7Ukgs8lgtAkc7UlgtAkgc8kgtAkc7Ukgc4kc7Ukc7Ulgs8kgMwkc7Ulgs8kc7Ukc7Ulgs8kc7UlgtEkgc4kdLclhNQkcbEkcrIkecAkd7skf8skfskkfMUkfcYke8IAiWkWAAAAM3RSTlMAuMkM8Z2igutj+ce0pnVytaydkYh5Tk0/NzMqGhEJBd3V0M++m5aOVS4i8+bguKuBbFqyyWhxAAACKUlEQVR42u3Y6W7aQBTF8Sk0NvsSCIQ9e9J071yM7dpN+/4vVamfj7GpPGci5f5fgJ/g+kjGaJqmaZqmadqra/0jvA/OCgpC47hVIMcLjNMGAiIK7kW8CkIRr4IPIn4FDSEK8BfgVxCKZ0FPPAsacppg06zczgVAPr6v3KfG2awKwGk3MyIAN/ENkMA3QAa+AbL2DQh8A6TpGzDzDRj4BoQKePOA/zvCJEnlUEsy3Z4OSNLsJc+jeuq0bvvt5gmAgyRZHsfxvqZsZK1tDasDJPkZx7b2vmAA/vx9ZOuvWw1wSDLw+bU0QgBQFEfWTXMAQD+AddVVFUD6yx3ALqvcQLS3zrooB6TZ3rrrHADACbhrXAHwAgCcbwDfIP0GJHd5A/NSQJpZlz0DAPMGW6Yc8Mcl4K4C4LdLwGM5QHKXgDYAMIfYXgIAc4g7GwBgPgTXBgCYQzwGAOoQfwMA6hA/AQB1iFcAQB3iHQAQhziC7wXMIT5HAOYQDxGAOsQIQBxiu0YA4kPw2SAAcYhHEEAc4kcIIA5xGwKIQ7yEAN4NdpoQQBtie2sggDfEfQzgDfEFBvCGeI4BvCF+xgDiayEG0Ib4rgBAG+KHAgBxiDGANsSXBQDWDdoNBvRYQ3xlcFPeEOMWxL8mcDecIe5siwALzhAPTWETxkPQNUf66n6Ir7fmWFPXQ9zfmeMt/q1B5AjQfTLlrb5Peu/qbzR+GC6Npmmapmmapr3G/gJCrXEWaiq1VwAAAABJRU5ErkJggg==')
+  )
   link(rel='stylesheet' type='text/css' href='/css/style.css')
 body.directory
   div(style='margin-left: 42px;')
