@@ -466,6 +466,23 @@ default: `null`
 
 <br/><br/>
 
+# Metadata
+Enables the manipulation of the metadata of the pages.
+
+Example:
+```js
+Options {
+    metadata: [
+		{ property: 'og:title', content: 'A title.' },
+		{ property: 'og:description', content: 'A description.' }
+    ]
+}
+```
+- type: `<array>`
+default: `null`
+
+<br/><br/>
+
 # Exclude
 Separate from the filter.
 
