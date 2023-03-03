@@ -49,7 +49,11 @@ const port = 3000;
 const directory = '/var/www/html/';
 const options = {};
     
-const server = ivfi.run(port, directory, options);
+(async () =>
+{
+    /** Start server */
+    const server = await ivfi.run(port, directory, options);
+})();
 ```
 This will spin up a webserver on `http://localhost:3000/` with the path set to `/var/www/html/`.
 

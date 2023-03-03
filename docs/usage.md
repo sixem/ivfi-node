@@ -15,14 +15,14 @@ import ivfi from 'ivfi';
 
 /** Variables */
 const port = 4000,
-    directory = '/mnt/files/',
+    directory = '/mnt/e/Streamers/',
     options = {};
 
-/** Create server instance */
-const server = ivfi();
-
-/** Start server */
-server.run(port, directory, options);
+(async () =>
+{
+    /** Start server */
+    const server = await ivfi.run(port, directory, options);
+})();
 ```
 
 ## Server Functions
