@@ -20,8 +20,7 @@
 	<a href="https://ivfi.io/docs/node/#/configuration">Configuration</a>&nbsp;&nbsp;
 	<a href="https://ivfi.io/docs/node/#/building">Building</a>
 </p>
-
-<br/><br/>
+<br/>
 
 # About
 IVFi-Node is a file directory browser script made in Node and TypeScript.
@@ -39,7 +38,7 @@ npm install ivfi
 ```
 
 ## Usage
-Import package:
+Import (or require) package:
 ```js
 import ivfi from 'ivfi';
 ```
